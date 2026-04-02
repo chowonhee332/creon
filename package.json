@@ -1,0 +1,29 @@
+{
+  "name": "contents-builder---1023(final)",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "prebuild": "node generate_home_images.cjs",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
+    "@google/genai": "latest",
+    "@imgly/background-removal": "^1.7.0",
+    "@supabase/supabase-js": "^2.101.1",
+    "imagetracerjs": "^1.2.6",
+    "reshaped": "^3.8.5"
+  },
+  "devDependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
