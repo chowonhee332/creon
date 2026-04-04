@@ -115,6 +115,19 @@ export default defineConfig(({ mode }) => {
       optimizeDeps: {
         exclude: ['@imgly/background-removal']
       },
-      assetsInclude: ['**/*.wasm']
+      assetsInclude: ['**/*.wasm'],
+      build: {
+        chunkSizeWarningLimit: 1600,
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              'vendor-genai': ['@google/genai'],
+              'vendor-ffmpeg': ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
+              'vendor-imgly': ['@imgly/background-removal'],
+              'vendor-reshaped': ['reshaped']
+            }
+          }
+        }
+      }
     };
 });
