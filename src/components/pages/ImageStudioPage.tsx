@@ -3,6 +3,7 @@ import { TextField, Button, Text, View, Stack, Card, Textarea } from 'reshaped';
 import { useApp } from '../../context/AppContext';
 import { generateImage, ReferenceImage } from '../../utils/imageGeneration';
 import { showToast } from '../Toast';
+import { uploadGeneration } from '../../lib/storage';
 import type { GeneratedImageData } from '../../context/AppContext';
 
 export const ImageStudioPage: React.FC = () => {
@@ -47,7 +48,9 @@ export const ImageStudioPage: React.FC = () => {
         setCurrentGeneratedImageStudio(newImage);
         setImageStudioHistory(newHistory);
         setImageStudioHistoryIndex(newHistory.length - 1);
-        
+
+        uploadGeneration(`data:${result.mimeType};base64,${result.data}`, result.mimeType, `image_${Date.now()}.png`).catch(err => { console.error('[upload]', err); showToast({ type: 'error', title: '저장 실패', body: String(err?.message ?? err) }); });
+
         showToast({ type: 'success', title: 'Generated!', body: 'Image has been generated successfully.' });
       } else {
         showToast({ type: 'error', title: 'Generation Failed', body: 'Failed to generate image. Please try again.' });

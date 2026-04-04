@@ -58,18 +58,19 @@
           <button id="signup-btn" class="header-action-btn" aria-label="Signup" title="Signup" style="background-color: var(--accent-color, #2962FF); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; width: fit-content; height: 32px; font-size: 14px; cursor: pointer;">
             회원가입
           </button>
-          <button id="storage-btn" class="header-action-btn icon-button hidden" aria-label="내 스토리지" title="내 스토리지" style="background: none; border: none; padding: 8px; width: 40px; height: 40px; border-radius: 50%; color: var(--text-primary); cursor: pointer;">
-            <span class="material-symbols-outlined">photo_library</span>
-          </button>
-          <button id="admin-btn" class="header-action-btn icon-button hidden" aria-label="어드민" title="어드민" style="background: none; border: none; padding: 8px; width: 40px; height: 40px; border-radius: 50%; color: var(--text-primary); cursor: pointer;">
-            <span class="material-symbols-outlined">admin_panel_settings</span>
-          </button>
-          <button id="history-btn" class="header-action-btn history-btn icon-button hidden" aria-label="History" title="History" style="background: none; border: none; padding: 8px; width: 40px; height: 40px; border-radius: 50%; color: var(--text-primary); cursor: pointer; transition: background-color 0.2s;">
-            <span class="material-symbols-outlined">history</span>
-          </button>
           <!-- Profile Dropdown -->
           <div id="profile-dropdown" class="profile-dropdown hidden" style="position: relative;">
-            <div id="profile-dropdown-menu" class="profile-dropdown-menu hidden" style="position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); min-width: 160px; z-index: 1000; overflow: hidden;">
+            <div id="profile-dropdown-menu" class="profile-dropdown-menu hidden" style="position: absolute; top: 100%; right: 0; margin-top: 20px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); min-width: 160px; z-index: 1000; overflow: hidden;">
+              <div id="profile-email-header" style="padding: 12px 16px; font-size: 13px; color: var(--text-secondary); border-bottom: 1px solid var(--border-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;"></div>
+              <button id="storage-menu-item" class="profile-dropdown-item" style="width: 100%; padding: 12px 16px; text-align: left; background: none; border: none; color: var(--text-primary); font-size: 14px; cursor: pointer; transition: background-color 0.2s; display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 18px;">photo_library</span>
+                스토리지
+              </button>
+              <button id="admin-menu-item" class="profile-dropdown-item hidden" style="width: 100%; padding: 12px 16px; text-align: left; background: none; border: none; color: var(--text-primary); font-size: 14px; cursor: pointer; transition: background-color 0.2s; display: none; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 18px;">admin_panel_settings</span>
+                어드민
+              </button>
+              <div style="height: 1px; background: var(--border-color); margin: 4px 0;"></div>
               <button id="api-key-menu-item" class="profile-dropdown-item" style="width: 100%; padding: 12px 16px; text-align: left; background: none; border: none; color: var(--text-primary); font-size: 14px; cursor: pointer; transition: background-color 0.2s;">
                 API key
               </button>
@@ -2220,8 +2221,7 @@
         const signupBtn = document.getElementById('signup-btn');
         const profileDropdown = document.getElementById('profile-dropdown');
         const dropdownMenu = document.getElementById('profile-dropdown-menu');
-        const storageBtn = document.getElementById('storage-btn');
-        const adminBtn = document.getElementById('admin-btn');
+        const adminMenuItem = document.getElementById('admin-menu-item');
         if (!loginBtn) return;
         if (loggedIn) {
           const email = getLoggedInEmail();
@@ -2231,12 +2231,16 @@
           loginBtn.setAttribute('aria-label', 'Profile Menu');
           profileDropdown?.classList.remove('hidden');
           if (signupBtn) signupBtn.style.display = 'none';
-          if (storageBtn) storageBtn.classList.remove('hidden');
+          const emailHeader = document.getElementById('profile-email-header');
+          if (emailHeader) emailHeader.textContent = email || '';
           // 어드민 여부 확인 (creonAuth 준비될 때까지 재시도)
           const checkAdmin = (attempts) => {
             if (window.creonAuth) {
               window.creonAuth.getProfile().then(profile => {
-                if (profile?.role === 'admin') adminBtn?.classList.remove('hidden');
+                if (profile?.role === 'admin') {
+                  adminMenuItem?.classList.remove('hidden');
+                  adminMenuItem && (adminMenuItem.style.display = 'flex');
+                }
               }).catch(() => {});
             } else if (attempts > 0) {
               setTimeout(() => checkAdmin(attempts - 1), 300);
@@ -2250,8 +2254,7 @@
           profileDropdown?.classList.add('hidden');
           dropdownMenu?.classList.add('hidden');
           if (signupBtn) signupBtn.style.display = '';
-          if (storageBtn) storageBtn.classList.add('hidden');
-          if (adminBtn) adminBtn.classList.add('hidden');
+          if (adminMenuItem) { adminMenuItem.classList.add('hidden'); adminMenuItem.style.display = 'none'; }
         }
       }
 
@@ -2349,13 +2352,16 @@
           }
         }, true);
 
-        document.getElementById('storage-btn')?.addEventListener('click', function() {
+        document.getElementById('storage-menu-item')?.addEventListener('click', function() {
+          document.getElementById('profile-dropdown-menu')?.classList.add('hidden');
           document.querySelectorAll('.page-container').forEach(el => el.classList.add('hidden'));
           document.getElementById('page-storage')?.classList.remove('hidden');
           if (window.mountStoragePage) window.mountStoragePage();
+          if (window.reloadStoragePage) window.reloadStoragePage();
         });
 
-        document.getElementById('admin-btn')?.addEventListener('click', function() {
+        document.getElementById('admin-menu-item')?.addEventListener('click', function() {
+          document.getElementById('profile-dropdown-menu')?.classList.add('hidden');
           document.querySelectorAll('.page-container').forEach(el => el.classList.add('hidden'));
           document.getElementById('page-admin')?.classList.remove('hidden');
           if (window.mountAdminPage) window.mountAdminPage();

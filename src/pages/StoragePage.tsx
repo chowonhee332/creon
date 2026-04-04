@@ -19,8 +19,9 @@ export default function StoragePage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getMyStorageItems();
-      setItems(data as StorageItem[]);
+      const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error('요청 시간 초과')), 8000));
+      const data = await Promise.race([getMyStorageItems(), timeout]) as StorageItem[];
+      setItems(data);
       // signed URL 일괄 조회
       const urlMap: Record<string, string> = {};
       await Promise.all(
@@ -31,12 +32,19 @@ export default function StoragePage() {
         })
       );
       setSignedUrls(urlMap);
+    } catch (err) {
+      console.error('[StoragePage] load error:', err);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    (window as any).reloadStoragePage = load;
+    return () => { delete (window as any).reloadStoragePage; };
+  }, [load]);
 
   const handleDelete = async (item: StorageItem) => {
     if (!confirm(`"${item.original_name || item.id}" 을 삭제하시겠습니까?`)) return;

@@ -5,6 +5,7 @@ import { Studio3DPlaceholder } from '../Studio3DPlaceholder';
 import { DEFAULT_3D_STYLE_PROMPT_TEMPLATE } from '../../utils/constants';
 import { generateImage, ReferenceImage } from '../../utils/imageGeneration';
 import { showToast } from '../Toast';
+import { uploadGeneration } from '../../lib/storage';
 import type { GeneratedImageData } from '../../context/AppContext';
 
 export const Studio3DPage: React.FC = () => {
@@ -61,7 +62,9 @@ export const Studio3DPage: React.FC = () => {
         setCurrentGeneratedImage(newImage);
         setImageHistory(newHistory);
         setHistoryIndex(newHistory.length - 1);
-        
+
+        uploadGeneration(`data:${result.mimeType};base64,${result.data}`, result.mimeType, `3d_${subject}_${Date.now()}.png`).catch(err => { console.error('[upload]', err); showToast({ type: 'error', title: '저장 실패', body: String(err?.message ?? err) }); });
+
         showToast({ type: 'success', title: 'Generated!', body: '3D icon has been generated successfully.' });
       } else {
         showToast({ type: 'error', title: 'Generation Failed', body: 'Failed to generate icon. Please try again.' });

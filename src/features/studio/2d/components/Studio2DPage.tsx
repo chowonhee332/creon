@@ -4,6 +4,7 @@ import { useApp } from '../../../../context/AppContext';
 import type { GeneratedImageData } from '../../../../context/AppContext';
 import { generateImage, ReferenceImage } from '../../../../utils/imageGeneration';
 import { showToast } from '../../../../components/Toast';
+import { uploadGeneration } from '../../../../lib/storage';
 import { DEFAULT_2D_STYLE_PROMPT_TEMPLATE } from '../../../../utils/constants';
 // Debounce hook available but not used yet - reserved for future color/opacity live preview
 // import { useDebounce } from '../hooks/useDebounce';
@@ -209,6 +210,8 @@ export const Studio2DPage: React.FC = () => {
           setCurrentGeneratedImage2d(newImage);
           return newHistory;
         });
+
+        uploadGeneration(`data:${imageData.mimeType};base64,${imageData.data}`, imageData.mimeType, `2d_${subject}_${Date.now()}.png`).catch(err => { console.error('[upload]', err); showToast({ type: 'error', title: '저장 실패', body: String(err?.message ?? err) }); });
 
         // Open details panel
         setDetailsPanelOpen(true);

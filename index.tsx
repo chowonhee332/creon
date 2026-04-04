@@ -3099,6 +3099,8 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
         const dataUrl = `data:${newImage.mimeType};base64,${newImage.data}`;
         const newLibraryItem = { id: newImage.id, dataUrl, mimeType: newImage.mimeType };
 
+        uploadGeneration(dataUrl, newImage.mimeType, `${newImage.id}.${newImage.mimeType.split('/')[1] || 'png'}`).catch(err => { console.error('[upload 2d]', err); });
+
         imageLibrary.unshift(newLibraryItem);
         if (imageLibrary.length > 20) {
             imageLibrary.pop();
@@ -4762,6 +4764,8 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
 
             const dataUrl = `data:${newImage.mimeType};base64,${newImage.data}`;
             const newLibraryItem = { id: newImage.id, dataUrl, mimeType: newImage.mimeType };
+
+            uploadGeneration(dataUrl, newImage.mimeType, `${newImage.id}.${newImage.mimeType.split('/')[1] || 'png'}`).catch(err => { console.error('[upload 3d]', err); });
 
             imageLibrary.unshift(newLibraryItem);
             if (imageLibrary.length > 20) { // Limit to 20 images

@@ -53,7 +53,7 @@ export default function AdminPage() {
 
   const loadOverview = useCallback(async () => {
     // 총 생성 건수
-    const { count: genCount } = await supabase.from('generations').select('*', { count: 'exact', head: true });
+    const { count: genCount } = await supabase.from('storage_items').select('*', { count: 'exact', head: true });
     setTotalGenerations(genCount ?? 0);
 
     // 총 사용자 수
@@ -63,20 +63,24 @@ export default function AdminPage() {
     // 최근 14일 일별 생성 건수
     const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
     const { data: genData } = await supabase
-      .from('generations')
+      .from('storage_items')
       .select('created_at')
       .gte('created_at', since)
       .order('created_at', { ascending: true });
 
     const dayMap: Record<string, number> = {};
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+      dayMap[d.toISOString().slice(0, 10)] = 0;
+    }
     (genData ?? []).forEach(g => {
       const day = g.created_at.slice(0, 10);
-      dayMap[day] = (dayMap[day] ?? 0) + 1;
+      if (day in dayMap) dayMap[day] = (dayMap[day] ?? 0) + 1;
     });
     setDailyStats(Object.entries(dayMap).map(([date, count]) => ({ date, count })));
 
     // 사용자별 생성 건수 Top 10
-    const { data: allGen } = await supabase.from('generations').select('user_id');
+    const { data: allGen } = await supabase.from('storage_items').select('user_id');
     const { data: profileList } = await supabase.from('profiles').select('id, email');
     const profileMap: Record<string, string> = {};
     (profileList ?? []).forEach((p: any) => { profileMap[p.id] = p.email; });
@@ -93,10 +97,13 @@ export default function AdminPage() {
 
     // 타입별 통계
     const { data: typeData } = await supabase
-      .from('generations')
-      .select('type');
+      .from('storage_items')
+      .select('file_type');
     const typeMap: Record<string, number> = {};
-    (typeData ?? []).forEach((g: any) => { typeMap[g.type] = (typeMap[g.type] ?? 0) + 1; });
+    (typeData ?? []).forEach((g: any) => {
+      const type = g.file_type?.split('/')[0] || 'unknown';
+      typeMap[type] = (typeMap[type] ?? 0) + 1;
+    });
     setTypeStats(Object.entries(typeMap).map(([type, count]) => ({ type, count })).sort((a, b) => b.count - a.count));
   }, []);
 
@@ -108,10 +115,14 @@ export default function AdminPage() {
   const loadContent = useCallback(async () => {
     const { data } = await supabase
       .from('storage_items')
-      .select('*, profiles(email)')
+      .select('*')
       .order('created_at', { ascending: false })
       .limit(50);
-    setAllContent(data ?? []);
+    const { data: profileList } = await supabase.from('profiles').select('id, email');
+    const profileMap: Record<string, string> = {};
+    (profileList ?? []).forEach((p: any) => { profileMap[p.id] = p.email; });
+    const enriched = (data ?? []).map((item: any) => ({ ...item, profiles: { email: profileMap[item.user_id] } }));
+    setAllContent(enriched);
 
     const urlMap: Record<string, string> = {};
     await Promise.all(
@@ -169,6 +180,7 @@ export default function AdminPage() {
   );
 
   return (
+    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
     <div style={styles.container}>
       <div style={styles.header}>
         <h2 style={styles.title}>어드민 대시보드</h2>
@@ -335,11 +347,12 @@ export default function AdminPage() {
         </div>
       )}
     </div>
+    </div>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  container: { padding: '24px', maxWidth: 1200, margin: '0 auto' },
+  container: { padding: '24px', maxWidth: 900, margin: '0 auto', width: '100%' },
   header: { marginBottom: 24 },
   title: { margin: 0, fontSize: 20, fontWeight: 600 },
   tabs: { display: 'flex', gap: 0, marginBottom: 24, borderBottom: '1px solid var(--border-color)' },
