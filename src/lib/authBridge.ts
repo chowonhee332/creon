@@ -4,28 +4,33 @@ import { saveApiKey, getApiKey, deleteApiKey } from './apiKeys';
 
 const authBridge = {
   async signIn(email: string, password: string) {
+    if (!supabase) throw new Error('Supabase client is not initialized.');
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     return data;
   },
 
   async signUp(email: string, password: string) {
+    if (!supabase) throw new Error('Supabase client is not initialized.');
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
     return data;
   },
 
   async signOut() {
+    if (!supabase) throw new Error('Supabase client is not initialized.');
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   },
 
   async getSession() {
+    if (!supabase) return null;
     const { data: { session } } = await supabase.auth.getSession();
     return session;
   },
 
   async getProfile() {
+    if (!supabase) return null;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return null;
     const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
@@ -45,7 +50,9 @@ const authBridge = {
   },
 
   onAuthStateChange(callback: (session: any) => void) {
-    return supabase.auth.onAuthStateChange((_event, session) => callback(session));
+    if (!supabase) return () => {};
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => callback(session));
+    return data.subscription.unsubscribe;
   },
 
   openModal(tab: 'login' | 'signup' = 'login') {
