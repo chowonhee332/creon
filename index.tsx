@@ -3100,6 +3100,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
         const newLibraryItem = { id: newImage.id, dataUrl, mimeType: newImage.mimeType };
 
         uploadGeneration(dataUrl, newImage.mimeType, `${newImage.id}.${newImage.mimeType.split('/')[1] || 'png'}`).catch(err => { console.error('[upload 2d]', err); });
+        logGeneration('image', 'gemini-2.5-flash-image', imagePromptSubjectInput2d.value).catch(() => {});
 
         imageLibrary.unshift(newLibraryItem);
         if (imageLibrary.length > 20) {
@@ -4766,6 +4767,7 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
             const newLibraryItem = { id: newImage.id, dataUrl, mimeType: newImage.mimeType };
 
             uploadGeneration(dataUrl, newImage.mimeType, `${newImage.id}.${newImage.mimeType.split('/')[1] || 'png'}`).catch(err => { console.error('[upload 3d]', err); });
+            logGeneration('image', 'gemini-2.5-flash-image', imagePromptSubjectInput.value).catch(() => {});
 
             imageLibrary.unshift(newLibraryItem);
             if (imageLibrary.length > 20) { // Limit to 20 images

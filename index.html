@@ -2304,33 +2304,35 @@
       document.addEventListener('DOMContentLoaded', function() {
         if (isLoggedIn()) updateLoginButton(true);
 
-        const restoreSession = async () => {
-          if (!window.creonAuth) return;
-          const session = await window.creonAuth.getSession();
-          if (session) {
-            setLoggedIn(true, session.user.email);
-            const key = await window.creonAuth.getApiKey();
-            if (key) localStorage.setItem('geminiApiKey', key);
-          } else {
+        const loginWithStatusCheck = async (session) => {
+          if (!session) {
             setLoggedIn(false, '');
             localStorage.removeItem('geminiApiKey');
             localStorage.removeItem('GEMINI_API_KEY');
+            return;
           }
+          const profile = await window.creonAuth.getProfile();
+          if (profile?.status === 'pending' || profile?.status === 'rejected' || profile?.is_blocked) {
+            await window.creonAuth.signOut();
+            setLoggedIn(false, '');
+            return;
+          }
+          setLoggedIn(true, session.user.email);
+          const key = await window.creonAuth.getApiKey();
+          if (key) localStorage.setItem('geminiApiKey', key);
+        };
+
+        const restoreSession = async () => {
+          if (!window.creonAuth) return;
+          const session = await window.creonAuth.getSession();
+          await loginWithStatusCheck(session);
         };
         setTimeout(restoreSession, 300);
 
         setTimeout(() => {
           if (!window.creonAuth) return;
           window.creonAuth.onAuthStateChange(async (session) => {
-            if (session) {
-              setLoggedIn(true, session.user.email);
-              const key = await window.creonAuth.getApiKey();
-              if (key) localStorage.setItem('geminiApiKey', key);
-            } else {
-              setLoggedIn(false, '');
-              localStorage.removeItem('geminiApiKey');
-              localStorage.removeItem('GEMINI_API_KEY');
-            }
+            await loginWithStatusCheck(session);
           });
         }, 300);
 
@@ -2404,6 +2406,16 @@
           try {
             const data = await window.creonAuth.signIn(email, password);
             const profile = await window.creonAuth.getProfile();
+            if (profile?.status === 'pending') {
+              await window.creonAuth.signOut();
+              errorEl.textContent = '가입 승인 대기 중입니다. 관리자 승인 후 로그인할 수 있습니다.';
+              return;
+            }
+            if (profile?.status === 'rejected') {
+              await window.creonAuth.signOut();
+              errorEl.textContent = '가입이 거절된 계정입니다. 관리자에게 문의하세요.';
+              return;
+            }
             if (profile?.is_blocked) {
               await window.creonAuth.signOut();
               errorEl.textContent = '차단된 계정입니다. 관리자에게 문의하세요.';
@@ -2438,8 +2450,8 @@
           try {
             await window.creonAuth.signUp(email, password);
             errorEl.style.color = '#2e7d32';
-            errorEl.textContent = '가입 완료! 이메일을 확인하거나 로그인해주세요.';
-            setTimeout(() => { errorEl.style.color = '#e53935'; switchAuthTab('login'); }, 2000);
+            errorEl.textContent = '가입 신청이 완료되었습니다. 관리자 승인 후 로그인할 수 있습니다.';
+            setTimeout(() => { errorEl.style.color = '#e53935'; switchAuthTab('login'); }, 3000);
           } catch (err) {
             errorEl.textContent = err.message || '회원가입에 실패했습니다.';
           } finally {

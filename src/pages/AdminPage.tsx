@@ -6,6 +6,7 @@ interface Profile {
   email: string;
   role: string;
   is_blocked: boolean;
+  status: string;
   created_at: string;
 }
 
@@ -162,6 +163,17 @@ export default function AdminPage() {
     setUsers(prev => prev.map(u => u.id === user.id ? { ...u, role: newRole } : u));
   };
 
+  const approveUser = async (user: Profile) => {
+    await supabase.from('profiles').update({ status: 'approved' }).eq('id', user.id);
+    setUsers(prev => prev.map(u => u.id === user.id ? { ...u, status: 'approved' } : u));
+  };
+
+  const rejectUser = async (user: Profile) => {
+    if (!confirm(`${user.email}의 가입을 거절하시겠습니까?`)) return;
+    await supabase.from('profiles').update({ status: 'rejected' }).eq('id', user.id);
+    setUsers(prev => prev.map(u => u.id === user.id ? { ...u, status: 'rejected' } : u));
+  };
+
   const maxDaily = Math.max(...dailyStats.map(d => d.count), 1);
 
   if (isAdmin === null || loading) return (
@@ -289,12 +301,25 @@ export default function AdminPage() {
                   </td>
                   <td style={styles.td}>{new Date(u.created_at).toLocaleDateString('ko-KR')}</td>
                   <td style={styles.td}>
-                    <span style={{ ...styles.badge, background: u.is_blocked ? '#c62828' : '#2e7d32', color: 'white' }}>
-                      {u.is_blocked ? '차단됨' : '정상'}
+                    <span style={{
+                      ...styles.badge,
+                      background: u.status === 'pending' ? '#e65100' : u.status === 'rejected' ? '#c62828' : u.is_blocked ? '#6a1a1a' : '#2e7d32',
+                      color: 'white'
+                    }}>
+                      {u.status === 'pending' ? '승인 대기' : u.status === 'rejected' ? '거절됨' : u.is_blocked ? '차단됨' : '정상'}
                     </span>
                   </td>
                   <td style={styles.td}>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {u.status === 'pending' && (
+                        <>
+                          <button onClick={() => approveUser(u)} style={{ ...styles.actionBtn, borderColor: '#2e7d32', color: '#2e7d32' }}>승인</button>
+                          <button onClick={() => rejectUser(u)} style={{ ...styles.actionBtn, borderColor: '#c62828', color: '#c62828' }}>거절</button>
+                        </>
+                      )}
+                      {u.status === 'rejected' && (
+                        <button onClick={() => approveUser(u)} style={{ ...styles.actionBtn, borderColor: '#2e7d32', color: '#2e7d32' }}>승인</button>
+                      )}
                       <button
                         onClick={() => toggleBlock(u)}
                         disabled={blockingId === u.id}
