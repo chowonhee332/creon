@@ -52,9 +52,9 @@ const authBridge = {
     return deleteApiKey();
   },
 
-  onAuthStateChange(callback: (session: any) => void) {
+  onAuthStateChange(callback: (session: any, event: string) => void) {
     if (!supabase) return () => {};
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => callback(session));
+    const { data } = supabase.auth.onAuthStateChange((event, session) => callback(session, event));
     return data.subscription.unsubscribe;
   },
 
