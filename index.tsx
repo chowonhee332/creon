@@ -10644,6 +10644,7 @@ regenerate3DBtn?.addEventListener('click', () => {
       let currentText = '';
       let charIndex = 0;
       let typingTimeout: ReturnType<typeof setTimeout> | null = null;
+      let lastDisplayedText = '';
       
       const typeText = () => {
         if (input.value !== '' || document.activeElement === input) {
@@ -10652,20 +10653,22 @@ regenerate3DBtn?.addEventListener('click', () => {
         
         if (charIndex < texts[currentIndex].length) {
           currentText += texts[currentIndex].charAt(charIndex);
+          lastDisplayedText = currentText;
           input.placeholder = PREFIX + currentText;
           charIndex++;
           typingTimeout = setTimeout(typeText, 50); // Typing speed
         } else {
+          lastDisplayedText = currentText;
           // Wait before erasing
           typingTimeout = setTimeout(eraseText, 2000);
         }
       };
-      
+
       const eraseText = () => {
         if (input.value !== '' || document.activeElement === input) {
           return; // Stop if input has value or is focused
         }
-        
+
         if (currentText.length > 0) {
           currentText = currentText.slice(0, -1);
           input.placeholder = PREFIX + currentText;
@@ -10693,6 +10696,7 @@ regenerate3DBtn?.addEventListener('click', () => {
           currentIndex = 0;
           currentText = '';
           charIndex = 0;
+          // lastDisplayedText는 유지 (click 핸들러에서 사용)
         }
       });
       
@@ -10701,6 +10705,7 @@ regenerate3DBtn?.addEventListener('click', () => {
         if (input.value === '') {
           currentIndex = 0;
           currentText = '';
+          lastDisplayedText = '';
           charIndex = 0;
           typeText();
         }
@@ -10721,12 +10726,12 @@ regenerate3DBtn?.addEventListener('click', () => {
         if (input.value === '') {
           // 현재 표시 중인 플레이스홀더 텍스트를 정확히 가져오기
           let textToApply = '';
-          
-          // currentText가 있으면 (타이핑 중이거나 완료된 상태)
-          if (currentText && currentText.length > 0) {
-            textToApply = currentText;
-          } 
-          // currentText가 없거나 비어있으면 현재 인덱스의 전체 텍스트 사용
+
+          // focus 전에 표시되던 텍스트 우선 사용
+          if (lastDisplayedText && lastDisplayedText.length > 0) {
+            textToApply = lastDisplayedText;
+          }
+          // 없으면 현재 인덱스의 전체 텍스트 사용
           else if (texts[currentIndex]) {
             textToApply = texts[currentIndex];
           }

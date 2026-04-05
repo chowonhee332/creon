@@ -137,11 +137,11 @@ export default function StoragePage() {
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  container: { padding: '24px', maxWidth: 1200, margin: '0 auto' },
+  container: { padding: '24px', maxWidth: 1200, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', minHeight: '100%' },
   header: { display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 },
   title: { margin: 0, fontSize: 20, fontWeight: 600 },
   count: { fontSize: 13, color: 'var(--text-secondary)', background: 'var(--input-bg)', padding: '2px 8px', borderRadius: 12 },
-  center: { width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 4 },
+  center: { width: '100%', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 },
   card: { background: 'var(--card-bg, var(--input-bg))', borderRadius: 12, overflow: 'hidden', border: '1px solid var(--border-color)' },
   preview: { width: '100%', aspectRatio: '1', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
