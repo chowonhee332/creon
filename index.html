@@ -2081,7 +2081,7 @@
 
       <!-- Login / Signup Modal -->
       <div id="login-modal-overlay" class="image-modal-overlay hidden">
-        <div class="image-modal-content" style="width: 400px; max-width: 400px; padding: 24px;">
+        <div class="image-modal-content" style="width: 380px; max-width: 380px; height: 560px; padding: 24px; display: flex; flex-direction: column; overflow-y: auto;">
           <!-- 탭 -->
           <div style="display: flex; gap: 0; margin-bottom: 24px; border-bottom: 1px solid var(--border-color);">
             <button type="button" id="auth-tab-login" style="flex:1; padding: 10px 0; font-size: 14px; font-weight: 600; background: none; border: none; border-bottom: 2px solid var(--accent-color, #2962FF); color: var(--accent-color, #2962FF); cursor: pointer;">로그인</button>
@@ -2089,7 +2089,7 @@
           </div>
 
           <!-- 로그인 폼 -->
-          <form id="login-modal-form">
+          <form id="login-modal-form" style="flex: 1; display: flex; flex-direction: column;">
             <div style="margin-bottom: 16px;">
               <label for="login-email" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">이메일</label>
               <input type="email" id="login-email" class="rename-input" placeholder="이메일을 입력하세요" required style="width: 100%;">
@@ -2103,15 +2103,15 @@
                 </button>
               </div>
             </div>
-            <p id="login-error-msg" style="font-size: 13px; color: #e53935; margin: 8px 0 16px; min-height: 18px;"></p>
-            <div class="rename-actions">
+            <p id="login-error-msg" style="font-size: 13px; color: #e53935; margin: 8px 0 0; min-height: 18px;"></p>
+            <div class="rename-actions" style="margin-top: auto; padding-top: 16px;">
               <button type="button" id="login-modal-cancel" style="background: none; border: none; color: var(--text-primary); font-size: 14px; cursor: pointer; padding: 0; height: 40px;">취소</button>
               <button type="submit" class="primary-btn" style="height: 40px; font-size: 14px;">로그인</button>
             </div>
           </form>
 
           <!-- 회원가입 폼 -->
-          <form id="signup-modal-form" style="display: none;">
+          <form id="signup-modal-form" style="display: none; flex: 1; flex-direction: column;">
             <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(41,98,255,0.06); border: 1px solid rgba(41,98,255,0.2); border-radius: 8px; padding: 12px 14px; margin-bottom: 20px;">
               <span class="material-symbols-outlined" style="font-size: 18px; color: var(--accent-color, #2962FF); flex-shrink: 0; margin-top: 1px;">info</span>
               <p style="margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.5;">가입 후 관리자 승인이 완료되면 서비스를 이용할 수 있습니다.</p>
@@ -2142,8 +2142,8 @@
                 </button>
               </div>
             </div>
-            <p id="signup-error-msg" style="font-size: 13px; color: #e53935; margin: 8px 0 16px; min-height: 18px;"></p>
-            <div class="rename-actions">
+            <p id="signup-error-msg" style="font-size: 13px; color: #e53935; margin: 8px 0 0; min-height: 18px;"></p>
+            <div class="rename-actions" style="margin-top: auto; padding-top: 16px;">
               <button type="button" id="signup-modal-cancel" style="background: none; border: none; color: var(--text-primary); font-size: 14px; cursor: pointer; padding: 0; height: 40px;">취소</button>
               <button type="submit" class="primary-btn" style="height: 40px; font-size: 14px;">회원가입</button>
             </div>
@@ -2310,7 +2310,7 @@
         const tabLogin = document.getElementById('auth-tab-login');
         const tabSignup = document.getElementById('auth-tab-signup');
         if (tab === 'login') {
-          loginForm.style.display = '';
+          loginForm.style.display = 'flex';
           signupForm.style.display = 'none';
           tabLogin.style.fontWeight = '600';
           tabLogin.style.borderBottomColor = 'var(--accent-color, #2962FF)';
@@ -2320,7 +2320,7 @@
           tabSignup.style.color = 'var(--text-secondary)';
         } else {
           loginForm.style.display = 'none';
-          signupForm.style.display = '';
+          signupForm.style.display = 'flex';
           tabSignup.style.fontWeight = '600';
           tabSignup.style.borderBottomColor = 'var(--accent-color, #2962FF)';
           tabSignup.style.color = 'var(--accent-color, #2962FF)';
@@ -2339,7 +2339,7 @@
         document.getElementById('login-error-msg').textContent = '';
         document.getElementById('signup-error-msg').textContent = '';
         document.getElementById('signup-success-screen').style.display = 'none';
-        document.getElementById('signup-modal-form').style.display = '';
+        document.getElementById('signup-modal-form').style.display = 'none';
         switchAuthTab('login');
       }
 
