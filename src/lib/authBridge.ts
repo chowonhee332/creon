@@ -13,7 +13,16 @@ const authBridge = {
   async signUp(email: string, password: string) {
     if (!supabase) throw new Error('Supabase client is not initialized.');
     const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
+    if (error) {
+      if (error.message.toLowerCase().includes('already registered') || error.message.toLowerCase().includes('already in use')) {
+        throw new Error('이미 사용 중인 이메일입니다.');
+      }
+      throw error;
+    }
+    // 이메일 확인이 활성화된 경우, 이미 존재하는 계정은 identities가 빈 배열로 반환됨
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      throw new Error('이미 사용 중인 이메일입니다.');
+    }
     if (data.user) {
       await supabase.from('profiles').upsert({ id: data.user.id, email, status: 'pending' }, { onConflict: 'id' });
     }

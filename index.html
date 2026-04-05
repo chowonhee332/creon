@@ -2096,7 +2096,12 @@
             </div>
             <div style="margin-bottom: 8px;">
               <label for="login-password" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">비밀번호</label>
-              <input type="password" id="login-password" class="rename-input" placeholder="비밀번호를 입력하세요" required style="width: 100%;">
+              <div style="position: relative;">
+                <input type="password" id="login-password" class="rename-input" placeholder="비밀번호를 입력하세요" required style="width: 100%; padding-right: 40px;">
+                <button type="button" onclick="togglePasswordVisibility('login-password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; color: var(--text-secondary); display: flex; align-items: center;">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">visibility</span>
+                </button>
+              </div>
             </div>
             <p id="login-error-msg" style="font-size: 13px; color: #e53935; margin: 8px 0 16px; min-height: 18px;"></p>
             <div class="rename-actions">
@@ -2117,11 +2122,21 @@
             </div>
             <div style="margin-bottom: 16px;">
               <label for="signup-password" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">비밀번호</label>
-              <input type="password" id="signup-password" class="rename-input" placeholder="6자 이상 입력하세요" required minlength="6" style="width: 100%;">
+              <div style="position: relative;">
+                <input type="password" id="signup-password" class="rename-input" placeholder="6자 이상 입력하세요" required minlength="6" style="width: 100%; padding-right: 40px;">
+                <button type="button" onclick="togglePasswordVisibility('signup-password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; color: var(--text-secondary); display: flex; align-items: center;">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">visibility</span>
+                </button>
+              </div>
             </div>
             <div style="margin-bottom: 8px;">
               <label for="signup-password-confirm" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">비밀번호 확인</label>
-              <input type="password" id="signup-password-confirm" class="rename-input" placeholder="비밀번호를 다시 입력하세요" required style="width: 100%;">
+              <div style="position: relative;">
+                <input type="password" id="signup-password-confirm" class="rename-input" placeholder="비밀번호를 다시 입력하세요" required style="width: 100%; padding-right: 40px;">
+                <button type="button" onclick="togglePasswordVisibility('signup-password-confirm', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; color: var(--text-secondary); display: flex; align-items: center;">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">visibility</span>
+                </button>
+              </div>
             </div>
             <p id="signup-error-msg" style="font-size: 13px; color: #e53935; margin: 8px 0 16px; min-height: 18px;"></p>
             <div class="rename-actions">
@@ -2197,6 +2212,18 @@
       // Creon Auth - Supabase 기반
       // window.creonAuth는 index.tsx (모듈)에서 초기화됨
       // ============================
+
+      function togglePasswordVisibility(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('.material-symbols-outlined');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.textContent = 'visibility_off';
+        } else {
+          input.type = 'password';
+          icon.textContent = 'visibility';
+        }
+      }
 
       function isLoggedIn() {
         return localStorage.getItem('creon_logged_in') === 'true';
