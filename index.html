@@ -2107,6 +2107,10 @@
 
           <!-- 회원가입 폼 -->
           <form id="signup-modal-form" style="display: none;">
+            <div style="display: flex; align-items: flex-start; gap: 10px; background: rgba(41,98,255,0.06); border: 1px solid rgba(41,98,255,0.2); border-radius: 8px; padding: 12px 14px; margin-bottom: 20px;">
+              <span class="material-symbols-outlined" style="font-size: 18px; color: var(--accent-color, #2962FF); flex-shrink: 0; margin-top: 1px;">info</span>
+              <p style="margin: 0; font-size: 13px; color: var(--text-secondary); line-height: 1.5;">가입 후 관리자 승인이 완료되면 서비스를 이용할 수 있습니다.</p>
+            </div>
             <div style="margin-bottom: 16px;">
               <label for="signup-email" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">이메일</label>
               <input type="email" id="signup-email" class="rename-input" placeholder="이메일을 입력하세요" required style="width: 100%;">
@@ -2125,6 +2129,17 @@
               <button type="submit" class="primary-btn" style="height: 40px; font-size: 14px;">회원가입</button>
             </div>
           </form>
+
+          <!-- 회원가입 완료 화면 -->
+          <div id="signup-success-screen" style="display: none; text-align: center; padding: 16px 0 8px;">
+            <div style="width: 56px; height: 56px; background: rgba(46,125,50,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+              <span class="material-symbols-outlined" style="font-size: 32px; color: #2e7d32;">check_circle</span>
+            </div>
+            <h3 style="margin: 0 0 8px; font-size: 17px; font-weight: 600;">가입 신청 완료!</h3>
+            <p style="margin: 0 0 6px; font-size: 14px; color: var(--text-secondary); line-height: 1.6;">관리자가 계정을 검토한 후 승인합니다.</p>
+            <p style="margin: 0 0 24px; font-size: 13px; color: var(--text-secondary);">승인 완료 후 로그인할 수 있습니다.</p>
+            <button type="button" id="signup-success-close" class="primary-btn" style="height: 40px; font-size: 14px; width: 100%;">확인</button>
+          </div>
         </div>
       </div>
       
@@ -2292,6 +2307,8 @@
         document.getElementById('signup-modal-form')?.reset();
         document.getElementById('login-error-msg').textContent = '';
         document.getElementById('signup-error-msg').textContent = '';
+        document.getElementById('signup-success-screen').style.display = 'none';
+        document.getElementById('signup-modal-form').style.display = '';
         switchAuthTab('login');
       }
 
@@ -2394,6 +2411,7 @@
 
         document.getElementById('auth-tab-login')?.addEventListener('click', () => switchAuthTab('login'));
         document.getElementById('auth-tab-signup')?.addEventListener('click', () => switchAuthTab('signup'));
+        document.getElementById('signup-success-close')?.addEventListener('click', closeLoginModal);
 
         document.getElementById('login-modal-cancel')?.addEventListener('click', closeLoginModal);
         document.getElementById('signup-modal-cancel')?.addEventListener('click', closeLoginModal);
@@ -2457,9 +2475,8 @@
           errorEl.textContent = '';
           try {
             await window.creonAuth.signUp(email, password);
-            errorEl.style.color = '#2e7d32';
-            errorEl.textContent = '가입 신청이 완료되었습니다. 관리자 승인 후 로그인할 수 있습니다.';
-            setTimeout(() => { errorEl.style.color = '#e53935'; switchAuthTab('login'); }, 3000);
+            document.getElementById('signup-modal-form').style.display = 'none';
+            document.getElementById('signup-success-screen').style.display = '';
           } catch (err) {
             errorEl.textContent = err.message || '회원가입에 실패했습니다.';
           } finally {

@@ -25,6 +25,12 @@ type Tab = 'overview' | 'users' | 'content';
 export default function AdminPage() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [tab, setTab] = useState<Tab>('overview');
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   // Overview
   const [totalGenerations, setTotalGenerations] = useState(0);
@@ -151,6 +157,7 @@ export default function AdminPage() {
       const newVal = !user.is_blocked;
       await supabase.from('profiles').update({ is_blocked: newVal }).eq('id', user.id);
       setUsers(prev => prev.map(u => u.id === user.id ? { ...u, is_blocked: newVal } : u));
+      showToast(newVal ? `${user.email} 차단됨` : `${user.email} 차단 해제됨`);
     } finally {
       setBlockingId(null);
     }
@@ -161,17 +168,20 @@ export default function AdminPage() {
     if (!confirm(`${user.email}을 ${newRole === 'admin' ? '관리자' : '일반 사용자'}로 변경하시겠습니까?`)) return;
     await supabase.from('profiles').update({ role: newRole }).eq('id', user.id);
     setUsers(prev => prev.map(u => u.id === user.id ? { ...u, role: newRole } : u));
+    showToast(newRole === 'admin' ? `${user.email} 관리자로 지정됨` : `${user.email} 일반 사용자로 변경됨`);
   };
 
   const approveUser = async (user: Profile) => {
     await supabase.from('profiles').update({ status: 'approved' }).eq('id', user.id);
     setUsers(prev => prev.map(u => u.id === user.id ? { ...u, status: 'approved' } : u));
+    showToast(`${user.email} 승인 완료`);
   };
 
   const rejectUser = async (user: Profile) => {
     if (!confirm(`${user.email}의 가입을 거절하시겠습니까?`)) return;
     await supabase.from('profiles').update({ status: 'rejected' }).eq('id', user.id);
     setUsers(prev => prev.map(u => u.id === user.id ? { ...u, status: 'rejected' } : u));
+    showToast(`${user.email} 거절됨`, 'error');
   };
 
   const maxDaily = Math.max(...dailyStats.map(d => d.count), 1);
@@ -193,6 +203,20 @@ export default function AdminPage() {
 
   return (
     <div style={{ width: '100%', height: '100%', overflow: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+    {toast && (
+      <div style={{
+        position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+        background: toast.type === 'success' ? '#1b5e20' : '#b71c1c',
+        color: '#fff', padding: '10px 20px', borderRadius: 8, fontSize: 13,
+        zIndex: 9999, boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+        display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap',
+      }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+          {toast.type === 'success' ? 'check_circle' : 'cancel'}
+        </span>
+        {toast.message}
+      </div>
+    )}
     <div style={styles.container}>
       <div style={styles.header}>
         <h2 style={styles.title}>어드민 대시보드</h2>
