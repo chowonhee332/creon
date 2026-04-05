@@ -2360,6 +2360,8 @@
 
         document.getElementById('storage-menu-item')?.addEventListener('click', function() {
           document.getElementById('profile-dropdown-menu')?.classList.add('hidden');
+          document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+          document.querySelectorAll('.bottom-nav-item').forEach(el => el.classList.remove('active'));
           document.querySelectorAll('.page-container').forEach(el => el.classList.add('hidden'));
           document.getElementById('page-storage')?.classList.remove('hidden');
           if (window.mountStoragePage) window.mountStoragePage();
@@ -2368,6 +2370,8 @@
 
         document.getElementById('admin-menu-item')?.addEventListener('click', function() {
           document.getElementById('profile-dropdown-menu')?.classList.add('hidden');
+          document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+          document.querySelectorAll('.bottom-nav-item').forEach(el => el.classList.remove('active'));
           document.querySelectorAll('.page-container').forEach(el => el.classList.add('hidden'));
           document.getElementById('page-admin')?.classList.remove('hidden');
           if (window.mountAdminPage) window.mountAdminPage();

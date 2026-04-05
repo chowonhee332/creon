@@ -323,6 +323,13 @@ input:where(:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(
   padding-top: 60px; /* GNB height compensation */
 }
 
+#admin-page-root,
+#storage-page-root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 /* Home page background gradient for smooth GNB blend - Keep original */
 #page-usages {
   /* Smooth multi-stop gradient from white to F2F4F6 and scrolls with content */

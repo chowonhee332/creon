@@ -192,7 +192,7 @@ export default function AdminPage() {
   );
 
   return (
-    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+    <div style={{ width: '100%', height: '100%', overflow: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
     <div style={styles.container}>
       <div style={styles.header}>
         <h2 style={styles.title}>어드민 대시보드</h2>
@@ -377,17 +377,17 @@ export default function AdminPage() {
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  container: { padding: '24px', maxWidth: 900, margin: '0 auto', width: '100%' },
+  container: { padding: '24px', maxWidth: 1200, margin: '0 auto', width: '100%' },
   header: { marginBottom: 24 },
   title: { margin: 0, fontSize: 20, fontWeight: 600 },
   tabs: { display: 'flex', gap: 0, marginBottom: 24, borderBottom: '1px solid var(--border-color)' },
   tab: { padding: '10px 20px', fontSize: 14, fontWeight: 400, background: 'none', border: 'none', borderBottom: '2px solid transparent', color: 'var(--text-secondary)', cursor: 'pointer' },
-  tabActive: { fontWeight: 600, borderBottomColor: 'var(--accent-color, #2962FF)', color: 'var(--accent-color, #2962FF)' },
+  tabActive: { fontWeight: 600, borderBottom: '2px solid var(--accent-color, #2962FF)', color: 'var(--accent-color, #2962FF)' },
   statRow: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 16 },
-  statCard: { background: 'var(--input-bg)', borderRadius: 12, padding: '20px 24px', border: '1px solid var(--border-color)' },
+  statCard: { background: '#ffffff', borderRadius: 12, padding: '20px 24px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' },
   statLabel: { margin: 0, fontSize: 13, color: 'var(--text-secondary)' },
   statValue: { margin: '8px 0 0', fontSize: 28, fontWeight: 700 },
-  section: { background: 'var(--input-bg)', borderRadius: 12, padding: '20px 24px', border: '1px solid var(--border-color)' },
+  section: { background: '#ffffff', borderRadius: 12, padding: '20px 24px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' },
   sectionTitle: { margin: '0 0 16px', fontSize: 14, fontWeight: 600 },
   chart: { display: 'flex', alignItems: 'flex-end', gap: 6, height: 100 },
   barWrap: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, flex: 1 },
