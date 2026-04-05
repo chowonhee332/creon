@@ -61,6 +61,12 @@ const authBridge = {
     return deleteApiKey();
   },
 
+  async checkEmailExists(email: string): Promise<boolean> {
+    if (!supabase) return false;
+    const { data } = await supabase.rpc('check_email_exists', { p_email: email });
+    return data === true;
+  },
+
   onAuthStateChange(callback: (session: any, event: string) => void) {
     if (!supabase) return () => {};
     const { data } = supabase.auth.onAuthStateChange((event, session) => callback(session, event));

@@ -133,3 +133,20 @@ create policy "storage: 어드민 전체 조회" on storage.objects for select u
 create index if not exists idx_generations_user_id on generations(user_id);
 create index if not exists idx_generations_created_at on generations(created_at);
 create index if not exists idx_storage_items_user_id on storage_items(user_id);
+
+-- ============================
+-- 이메일 중복 확인 함수 (비로그인 사용자도 호출 가능)
+-- ============================
+
+create or replace function public.check_email_exists(p_email text)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  return exists (select 1 from public.profiles where lower(email) = lower(p_email));
+end;
+$$;
+
+grant execute on function public.check_email_exists(text) to anon;

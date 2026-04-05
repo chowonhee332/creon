@@ -2118,7 +2118,11 @@
             </div>
             <div style="margin-bottom: 16px;">
               <label for="signup-email" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">이메일</label>
-              <input type="email" id="signup-email" class="rename-input" placeholder="이메일을 입력하세요" required style="width: 100%;">
+              <div style="display: flex; gap: 8px;">
+                <input type="email" id="signup-email" class="rename-input" placeholder="이메일을 입력하세요" required style="flex: 1; min-width: 0;">
+                <button type="button" id="signup-email-check-btn" style="flex-shrink: 0; height: 44px; padding: 0 14px; font-size: 13px; font-weight: 500; background: none; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); cursor: pointer; white-space: nowrap;">중복 확인</button>
+              </div>
+              <p id="signup-email-check-msg" style="margin: 6px 0 0; font-size: 12px; min-height: 16px;"></p>
             </div>
             <div style="margin-bottom: 16px;">
               <label for="signup-password" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">비밀번호</label>
@@ -2439,6 +2443,42 @@
         document.getElementById('auth-tab-login')?.addEventListener('click', () => switchAuthTab('login'));
         document.getElementById('auth-tab-signup')?.addEventListener('click', () => switchAuthTab('signup'));
         document.getElementById('signup-success-close')?.addEventListener('click', closeLoginModal);
+
+        // 이메일 중복 확인
+        document.getElementById('signup-email-check-btn')?.addEventListener('click', async function() {
+          const email = document.getElementById('signup-email').value.trim();
+          const msgEl = document.getElementById('signup-email-check-msg');
+          if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            msgEl.style.color = '#e53935';
+            msgEl.textContent = '올바른 이메일 형식을 입력하세요.';
+            return;
+          }
+          this.disabled = true;
+          this.textContent = '확인 중...';
+          msgEl.textContent = '';
+          try {
+            const exists = await window.creonAuth.checkEmailExists(email);
+            if (exists) {
+              msgEl.style.color = '#e53935';
+              msgEl.textContent = '이미 사용 중인 이메일입니다.';
+            } else {
+              msgEl.style.color = '#2e7d32';
+              msgEl.textContent = '사용 가능한 이메일입니다.';
+            }
+          } catch {
+            msgEl.style.color = '#e53935';
+            msgEl.textContent = '확인 중 오류가 발생했습니다.';
+          } finally {
+            this.disabled = false;
+            this.textContent = '중복 확인';
+          }
+        });
+
+        // 이메일 입력 변경 시 확인 결과 초기화
+        document.getElementById('signup-email')?.addEventListener('input', function() {
+          const msgEl = document.getElementById('signup-email-check-msg');
+          if (msgEl) msgEl.textContent = '';
+        });
 
         document.getElementById('login-modal-cancel')?.addEventListener('click', closeLoginModal);
         document.getElementById('signup-modal-cancel')?.addEventListener('click', closeLoginModal);
