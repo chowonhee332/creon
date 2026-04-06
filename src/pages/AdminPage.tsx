@@ -20,6 +20,12 @@ interface UserStat {
   count: number;
 }
 
+interface StorageStat {
+  email: string;
+  size: number;
+  count: number;
+}
+
 type Tab = 'overview' | 'users' | 'content';
 
 export default function AdminPage() {
@@ -38,6 +44,8 @@ export default function AdminPage() {
   const [dailyStats, setDailyStats] = useState<UsageStat[]>([]);
   const [userStats, setUserStats] = useState<UserStat[]>([]);
   const [typeStats, setTypeStats] = useState<{ type: string; count: number }[]>([]);
+  const [storageStats, setStorageStats] = useState<StorageStat[]>([]);
+  const [totalStorage, setTotalStorage] = useState(0);
 
   // Users
   const [users, setUsers] = useState<Profile[]>([]);
@@ -112,6 +120,21 @@ export default function AdminPage() {
       typeMap[type] = (typeMap[type] ?? 0) + 1;
     });
     setTypeStats(Object.entries(typeMap).map(([type, count]) => ({ type, count })).sort((a, b) => b.count - a.count));
+
+    // 사용자별 용량 통계
+    const { data: sizeData } = await supabase.from('storage_items').select('user_id, file_size');
+    const sizeMap: Record<string, { size: number; count: number }> = {};
+    (sizeData ?? []).forEach((g: any) => {
+      const email = profileMap[g.user_id] || g.user_id;
+      if (!sizeMap[email]) sizeMap[email] = { size: 0, count: 0 };
+      sizeMap[email].size += g.file_size ?? 0;
+      sizeMap[email].count += 1;
+    });
+    const sortedStorage = Object.entries(sizeMap)
+      .map(([email, { size, count }]) => ({ email, size, count }))
+      .sort((a, b) => b.size - a.size);
+    setStorageStats(sortedStorage);
+    setTotalStorage(sortedStorage.reduce((sum, s) => sum + s.size, 0));
   }, []);
 
   const loadUsers = useCallback(async () => {
@@ -186,6 +209,13 @@ export default function AdminPage() {
 
   const maxDaily = Math.max(...dailyStats.map(d => d.count), 1);
 
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  };
+
   if (isAdmin === null || loading) return (
     <div style={styles.center}>
       <span className="material-symbols-outlined" style={{ fontSize: 32, opacity: 0.4 }}>hourglass_empty</span>
@@ -235,7 +265,7 @@ export default function AdminPage() {
       {tab === 'overview' && (
         <div>
           {/* 요약 카드 */}
-          <div style={styles.statRow}>
+          <div style={{ ...styles.statRow, gridTemplateColumns: 'repeat(4, 1fr)' }}>
             <div style={styles.statCard}>
               <p style={styles.statLabel}>총 생성 건수</p>
               <p style={styles.statValue}>{totalGenerations.toLocaleString()}</p>
@@ -249,6 +279,10 @@ export default function AdminPage() {
               <p style={styles.statValue}>
                 {dailyStats.find(d => d.date === new Date().toISOString().slice(0, 10))?.count ?? 0}
               </p>
+            </div>
+            <div style={styles.statCard}>
+              <p style={styles.statLabel}>총 스토리지 사용량</p>
+              <p style={styles.statValue}>{formatBytes(totalStorage)}</p>
             </div>
           </div>
 
@@ -269,7 +303,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* 타입별 통계 */}
+          {/* 타입별 통계 + 생성 건수 */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
             <div style={styles.section}>
               <h3 style={styles.sectionTitle}>타입별 생성 건수</h3>
@@ -297,6 +331,33 @@ export default function AdminPage() {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* 사용자별 스토리지 용량 */}
+          <div style={{ ...styles.section, marginTop: 16 }}>
+            <h3 style={styles.sectionTitle}>사용자별 스토리지 사용량</h3>
+            <table style={{ ...styles.table, width: '100%' }}>
+              <thead>
+                <tr>
+                  <th style={styles.th}>이메일</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>파일 수</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>사용량</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>비율</th>
+                </tr>
+              </thead>
+              <tbody>
+                {storageStats.map(s => (
+                  <tr key={s.email}>
+                    <td style={{ ...styles.td, maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.email}</td>
+                    <td style={{ ...styles.td, textAlign: 'right' }}>{s.count}</td>
+                    <td style={{ ...styles.td, textAlign: 'right', fontWeight: 600 }}>{formatBytes(s.size)}</td>
+                    <td style={{ ...styles.td, textAlign: 'right', color: 'var(--text-secondary)' }}>
+                      {totalStorage > 0 ? `${((s.size / totalStorage) * 100).toFixed(1)}%` : '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
