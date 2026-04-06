@@ -7200,11 +7200,11 @@ Return the 5 suggestions as a JSON array.`;
         };
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro', // Using Gemini 2.5 Pro (latest available)
+            model: 'gemini-3.1-pro-preview', // Upgraded from 2.5-pro (deprecated June 2026)
             contents: contents,
             config: {
                 responseMimeType: 'application/json',
-                responseSchema: schema,
+                responseJsonSchema: schema,
             },
         });
 
@@ -7363,11 +7363,11 @@ Return as JSON array with exactly 3 minimal suggestions.`;
         };
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro', // Using Gemini 2.5 Pro (latest available)
+            model: 'gemini-3.1-pro-preview', // Upgraded from 2.5-pro (deprecated June 2026)
             contents: parts,
             config: {
                 responseMimeType: 'application/json',
-                responseSchema: schema,
+                responseJsonSchema: schema,
             },
         });
 
@@ -7566,11 +7566,11 @@ Return the 5 suggestions as a JSON array.`;
         };
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro', // Using Gemini 2.5 Pro (latest available)
+            model: 'gemini-3.1-pro-preview', // Upgraded from 2.5-pro (deprecated June 2026)
             contents: contents,
             config: {
                 responseMimeType: 'application/json',
-                responseSchema: schema,
+                responseJsonSchema: schema,
             },
         });
 
