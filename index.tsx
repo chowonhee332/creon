@@ -2883,7 +2883,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
       }
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+        model: 'gemini-3.1-flash-image-preview',
         contents: { parts },
         config,
       });
@@ -4823,9 +4823,9 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
     loaderModal?.classList.remove('hidden');
 
     try {
-      // Generate image from text using gemini-2.5-flash-image
+      // Generate image from text using gemini-3.1-flash-image-preview
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+        model: 'gemini-3.1-flash-image-preview',
         contents: [{ parts: [{ text: promptText }] }],
         config: {
           responseModalities: [Modality.IMAGE],
@@ -4870,9 +4870,9 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
     loaderModal?.classList.remove('hidden');
 
     try {
-      // Generate image from text using gemini-2.5-flash-image
+      // Generate image from text using gemini-3.1-flash-image-preview
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+        model: 'gemini-3.1-flash-image-preview',
         contents: [{ parts: [{ text: promptText }] }],
         config: {
           responseModalities: [Modality.IMAGE],
@@ -5484,7 +5484,7 @@ Make sure the result is photorealistic and aesthetically pleasing.`;
 
         
         const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+          model: 'gemini-3.1-flash-image-preview',
           contents: { parts },
           config: {
             responseModalities: [Modality.IMAGE],
@@ -5606,7 +5606,7 @@ Make sure the result is photorealistic and aesthetically pleasing.`;
         }
         
         const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+          model: 'gemini-3.1-flash-image-preview',
           contents: { parts },
           config: {
             responseModalities: [Modality.IMAGE],
@@ -7200,11 +7200,11 @@ Return the 5 suggestions as a JSON array.`;
         };
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro', // Using Gemini 2.5 Pro (latest available)
+            model: 'gemini-3.1-pro-preview',
             contents: contents,
             config: {
                 responseMimeType: 'application/json',
-                responseSchema: schema,
+                responseJsonSchema: schema,
             },
         });
 
@@ -7363,11 +7363,11 @@ Return as JSON array with exactly 3 minimal suggestions.`;
         };
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro', // Using Gemini 2.5 Pro (latest available)
+            model: 'gemini-3.1-pro-preview',
             contents: parts,
             config: {
                 responseMimeType: 'application/json',
-                responseSchema: schema,
+                responseJsonSchema: schema,
             },
         });
 
@@ -7566,11 +7566,11 @@ Return the 5 suggestions as a JSON array.`;
         };
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro', // Using Gemini 2.5 Pro (latest available)
+            model: 'gemini-3.1-pro-preview',
             contents: contents,
             config: {
                 responseMimeType: 'application/json',
-                responseSchema: schema,
+                responseJsonSchema: schema,
             },
         });
 
@@ -8388,7 +8388,7 @@ Return the 5 suggestions as a JSON array.`;
           });
           
           const response = await ai.models.generateContent({
-              model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+              model: 'gemini-3.1-flash-image-preview',
               contents: { parts },
               config: {
                   responseModalities: [Modality.IMAGE],
@@ -8518,7 +8518,7 @@ Return the 5 suggestions as a JSON array.`;
         parts.push(...imageParts);
         
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+            model: 'gemini-3.1-flash-image-preview',
             contents: { parts },
             config: {
                 responseModalities: [Modality.IMAGE],
@@ -9231,10 +9231,10 @@ const setupMotionDropZones2d = () => {
               const loaderModal = $('#image-generation-loader-modal');
               loaderModal?.classList.remove('hidden');
               
-              // Generate image from text using gemini-2.5-flash-image
+              // Generate image from text using gemini-3.1-flash-image-preview
               
               const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+                model: 'gemini-3.1-flash-image-preview',
                 contents: [{ parts: [{ text: promptText }] }],
                 config: {
                   responseModalities: [Modality.IMAGE],
@@ -9421,7 +9421,7 @@ const setupMotionDropZones2d = () => {
       ];
       
       const upscaleResponse = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+        model: 'gemini-3.1-flash-image-preview',
         contents: { parts },
         config: {
           responseModalities: [Modality.IMAGE],
@@ -9602,7 +9602,7 @@ const setupMotionDropZones2d = () => {
       }
 
       const zoomOutResponse = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+        model: 'gemini-3.1-flash-image-preview',
         contents: { parts },
         config,
       });
@@ -9706,7 +9706,7 @@ const setupMotionDropZones2d = () => {
       ];
       
       const regenerateResponse = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+        model: 'gemini-3.1-flash-image-preview',
         contents: { parts },
         config: {
           responseModalities: [Modality.IMAGE],
@@ -11175,7 +11175,7 @@ regenerate3DBtn?.addEventListener('click', () => {
                 p2dLoaderModal.classList.remove('hidden');
             }
             
-            // Use gemini-2.5-flash-image directly with current image as reference
+            // Use gemini-3.1-flash-image-preview directly with current image as reference
             // Create prompt: Keep the image exactly the same, only change icon color
             // Convert hex to RGB for better color specification
             const hexToRgb = (hex: string) => {
@@ -11237,7 +11237,7 @@ The result must be: IDENTICAL shape + PURE VIBRANT ${iconColor} color at MAXIMUM
             ];
             
             const aiResponse = await ai.models.generateContent({
-                model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+                model: 'gemini-3.1-flash-image-preview',
                 contents: { parts },
                 config: {
                     responseModalities: [Modality.IMAGE],
@@ -12201,7 +12201,7 @@ IMPORTANT: Preserve all other aspects including:
 
 Apply the main color (${objectColor}) thoughtfully as the primary/accent color of the main subject while keeping the overall image natural and well-balanced.`;
             
-            // Use gemini-2.5-flash-image directly with current image as reference
+            // Use gemini-3.1-flash-image-preview directly with current image as reference
             const parts: any[] = [
                 { text: colorChangePrompt },
                 {
@@ -12213,7 +12213,7 @@ Apply the main color (${objectColor}) thoughtfully as the primary/accent color o
             ];
             
             const aiResponse = await ai.models.generateContent({
-                model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+                model: 'gemini-3.1-flash-image-preview',
                 contents: { parts },
                 config: {
                     responseModalities: [Modality.IMAGE],
