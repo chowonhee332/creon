@@ -1298,6 +1298,11 @@
                                             <span class="btn-text">Recreate</span>
                                             <div class="btn-loader"></div>
                                         </button>
+                                        <button id="details-multiview-btn" class="secondary-btn" style="width: 100%;" disabled>
+                                            <span class="material-symbols-outlined">view_in_ar</span>
+                                            <span class="btn-text">Multi-view</span>
+                                            <div class="btn-loader"></div>
+                                        </button>
                                     </div>
                                     </div>
                                 </div>
@@ -2056,6 +2061,21 @@
         </div>
       </div>
       
+      <!-- Multi-view Modal -->
+      <div id="multiview-modal" class="image-modal-overlay hidden">
+        <div class="image-modal-content" style="width: 860px; max-width: 94vw; max-height: 92vh; padding: var(--spacing-5); display: flex; flex-direction: column; gap: var(--spacing-4);">
+          <header class="modal-header" style="flex-shrink: 0;">
+            <h2 class="modal-title">Multi-view</h2>
+            <button id="multiview-close-btn" class="icon-button" aria-label="Close">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </header>
+          <div id="multiview-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-3); overflow-y: auto;">
+            <!-- 6 view cards injected by JS -->
+          </div>
+        </div>
+      </div>
+
       <!-- Upload Choice Modal -->
       <div id="upload-choice-modal" class="image-modal-overlay hidden">
         <div class="image-modal-content">

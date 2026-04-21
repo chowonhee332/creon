@@ -1074,6 +1074,7 @@ const imagePromptDisplay = $('#image-prompt-display') as HTMLTextAreaElement;
   const detailsDeleteBtn = $('#details-delete-btn');
   const detailsUpscaleBtn = $('#details-upscale-btn');
   const detailsFixBtn = $('#details-fix-btn');
+  const detailsMultiviewBtn = $('#details-multiview-btn');
   const detailsBackgroundColorPicker = $('#details-background-color-picker-3d') as HTMLInputElement;
   const detailsObjectColorPicker = $('#details-object-color-picker-3d') as HTMLInputElement;
   const shadowToggleIcons = $('#shadow-toggle-icons') as HTMLInputElement;
@@ -2216,14 +2217,6 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
         clearTimeout(bannerToastTimer);
     }
 
-    // Don't trigger confetti for success toasts anymore (confetti is triggered when loading modal closes)
-    if (options.type === 'success') {
-        // Ensure toast is hidden
-        toast.classList.add('hidden');
-        return;
-    }
-    
-    // Show toast for non-success types
     toast.className = 'banner-toast'; // Reset classes
     toast.classList.add(options.type);
     toast.classList.remove('hidden');
@@ -2998,12 +2991,20 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
       const color = (document.querySelector('#p2d-color-picker') as HTMLInputElement).value;
 
       template.subject = subject;
-      template.controls.style.shape = style;
+      template.controls.style.shape = fill ? 'filled' : 'outlined';
       template.controls.style.fill.enabled = fill;
+      template.style_rules.render_type = fill ? 'filled' : 'outlined';
+      template.style_rules.fill_instruction = fill
+        ? 'FILLED variant: all shapes must be solid filled — no empty/hollow areas inside the icon'
+        : 'OUTLINED variant: draw only strokes/outlines, all interior areas must be white/transparent';
       template.controls.stroke.weight.value = weight;
       template.controls.color.primary = color;
-      
-      imagePromptDisplay2d.value = JSON.stringify(template, null, 2);
+
+      const fillPrefix = fill
+        ? 'IMPORTANT: Generate a FILLED (solid) icon — all enclosed shapes must be solid filled with color, not hollow.\n\n'
+        : 'IMPORTANT: Generate an OUTLINED icon — draw only strokes and outlines, all interior areas must be empty/white.\n\n';
+
+      imagePromptDisplay2d.value = fillPrefix + JSON.stringify(template, null, 2);
     } catch(e) {
       console.error("Failed to parse or update 2D prompt", e);
       imagePromptDisplay2d.value = DEFAULT_2D_STYLE_PROMPT_TEMPLATE.replace("{ICON_SUBJECT}", imagePromptSubjectInput2d.value || 'a friendly robot');
@@ -4574,13 +4575,18 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
     lines.push(`You MUST generate this icon in the EXACT same visual style as the reference Creon 3D icon sheet.`);
     lines.push(`The style is NON-NEGOTIABLE and must be applied to ANY subject, regardless of what the subject is.`);
     lines.push(`STYLE CHARACTERISTICS (MANDATORY FOR ALL ICONS):`);
+    const hasShadow = typeof lighting.shadows === 'string' && lighting.shadows.includes('soft ground shadow');
     lines.push(`- Smooth, glossy plastic material with high-gloss finish`);
     lines.push(`- Isometric 3D perspective (35deg tilt, 35deg pan, orthographic lens)`);
-    lines.push(`- Soft, uniform lighting with no harsh shadows`);
+    lines.push(hasShadow
+      ? `- Soft, uniform studio lighting with a soft ground/drop shadow beneath the object`
+      : `- Soft, uniform lighting with no harsh shadows`);
     lines.push(`- Color palette: Dominant blue (#2E6BFF), secondary blue (#4FC3F7), white (#FFFFFF), warm accent yellow (#FFD45A)`);
     lines.push(`- Pillowy, inflated, soft-volume forms with rounded edges (85% fillet)`);
     lines.push(`- Chibi/stylized proportions, simplified anatomy`);
-    lines.push(`- Floating subject with no ground contact`);
+    lines.push(hasShadow
+      ? `- Soft drop shadow beneath the subject, as if cast on a flat surface`
+      : `- Floating subject with no ground contact`);
     lines.push(`- Clean white background (#FFFFFF)`);
     lines.push(`- Single hero subject, minimal composition`);
     lines.push(`- No photographic realism, no textures, no noise, no grain`);
@@ -4685,9 +4691,17 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
     }
 
     if (!isFix) {
-      lines.push(`✅ LAYOUT REQUIREMENT: Ensure the subject remains centered, floating, and fully contained within the frame with clean margins.`);
+      lines.push(hasShadow
+        ? `✅ LAYOUT REQUIREMENT: Ensure the subject remains centered, with a soft ground shadow beneath it, fully contained within the frame with clean margins.`
+        : `✅ LAYOUT REQUIREMENT: Ensure the subject remains centered, floating, and fully contained within the frame with clean margins.`);
     }
 
+    lines.push(``);
+    if (hasShadow) {
+      lines.push(`🌑 SHADOW REQUIREMENT: Add a soft, realistic drop shadow directly beneath the object, as if it is resting on or floating just above a flat surface. The shadow should be subtle, blurred, and centered under the subject.`);
+    } else {
+      lines.push(`🚨 NO SHADOW RULE: There must be ZERO ground shadow, drop shadow, or cast shadow beneath or around the object. The subject must appear completely shadowless, floating in clean empty space. Any shadow beneath the object is STRICTLY FORBIDDEN.`);
+    }
     lines.push(``);
     lines.push(`🚫 FINAL STYLE ENFORCEMENT:`);
     lines.push(`- Maintain the specified aspect ratio (1024x576 for 16:9).`);
@@ -7527,19 +7541,40 @@ Return as JSON array with exactly 3 minimal suggestions.`;
 
     try {
         const subject = currentGeneratedImage.subject;
-        const textPrompt = `Analyze the provided image of a '${subject}'. Based on its appearance, create 5 unique and creative motion style suggestions for a short, looping video.
-Hard rules for every suggestion:
-- Absolutely preserve the subject's existing proportions, facial features, accessories, outfit, colors, lighting, background, and camera framing.
-- Do NOT introduce, add, or remove any props, characters, wardrobe pieces, particles, or environmental elements.
-- Describe only motions using the existing subject or existing environmental elements (e.g., gentle limb movement, breathing, water ripples, sunlight shifts) or subtle camera motion that keeps the subject fully visible.
-- Avoid any wording about transforming, morphing, changing shapes, swapping outfits, or replacing parts of the subject.
-- Motions must be seamless, looping, and subtle so that the source frame can be used as both the start and end without visible jumps.
-For each suggestion, provide:
-1. 'name': A short, catchy category name in Korean (e.g., '부드러운 루핑').
-2. 'description': A brief, engaging description in Korean of the motion style. You can use <b> tags for emphasis (e.g., '<b>자연스럽게 반복되는 움직임.</b> 시작과 끝이 매끄럽게 연결됩니다.').
-3. 'english': A concise, direct text-to-video prompt in English that embodies the motion style. The prompt must explicitly state that no new props or subjects appear, that the original design stays intact, and that the subject remains fully visible within the frame.
-4. 'korean': A lively, descriptive version of the prompt in Korean for the user to read, mentioning that it's a looping animation while also stating that 새로운 요소가 추가되지 않음을 강조하세요.
-Return the 5 suggestions as a JSON array.`;
+        let styleInfo = '';
+        try {
+            const constraints = JSON.parse(currentGeneratedImage.styleConstraints || '{}');
+            const mood = constraints.mood || constraints.atmosphere || '';
+            const style = constraints.style?.rendering || constraints.style?.type || '';
+            const colorScheme = constraints.colors?.palette || '';
+            if (mood) styleInfo += ` Mood/atmosphere: ${mood}.`;
+            if (style) styleInfo += ` Render style: ${style}.`;
+            if (colorScheme) styleInfo += ` Color palette: ${colorScheme}.`;
+        } catch {}
+
+        const textPrompt = `You are an expert motion designer for 3D icon animations. Analyze this 3D rendered icon/character of '${subject}'.${styleInfo}
+
+Create 5 distinct motion style suggestions for a seamless looping video. Cover a variety of motion types across these categories:
+- **Idle/Ambient**: subtle breathing, gentle floating, soft glow pulse
+- **Character Action**: a signature gesture, bounce, wave, or personality-driven move
+- **Camera**: slow orbit, gentle zoom breathe, subtle pan
+- **Physical**: weight-based bounce, spring jiggle, satisfying loop
+- **Expressive**: reaction pose, celebration, playful spin
+
+HARD RULES:
+- Preserve all existing design, colors, proportions, accessories, and background exactly
+- No new elements, props, or characters may appear
+- The 3D character must stay fully visible in frame at all times
+- Motion must loop seamlessly (start frame = end frame, no visible cut)
+- Keep motions subtle and polished — this is a premium 3D icon, not a cartoon
+
+For each suggestion provide:
+1. 'name': Short Korean label (2–4 characters, e.g. '둥실 부유', '반짝 호흡')
+2. 'description': 1–2 sentences in Korean with <b> tags on the key action. Make it feel premium and enticing.
+3. 'english': A structured video prompt in English following this format: "[Subject description]. [Specific motion action with physics detail]. [Camera behavior]. Loop seamlessly. No new elements added. Original 3D design preserved exactly."
+4. 'korean': The same prompt in Korean, written for the user to read. Emphasize the looping quality and that no new elements appear.
+
+Return as a JSON array of 5 objects.`;
         
         const imagePart = {
           inlineData: {
@@ -7712,6 +7747,10 @@ Return the 5 suggestions as a JSON array.`;
         } catch (e) {
             console.error('Failed to parse style constraints:', e);
         }
+    }
+
+    if (detailsMultiviewBtn) {
+        detailsMultiviewBtn.removeAttribute('disabled');
     }
 
     updateMotionUI();
@@ -10173,14 +10212,6 @@ const setupMotionDropZones2d = () => {
       return;
     }
 
-    // Show loading modal
-    resetLoaderModal(imageGenerationLoaderModal);
-    if (imageGenerationLoaderText) {
-      imageGenerationLoaderText.textContent = 'Generating MP4...';
-    }
-    imageGenerationLoaderModal?.classList.remove('hidden');
-
-    // Show loading state on button
     const mp4Btn = convertToMp4Btn as HTMLButtonElement;
     if (mp4Btn) {
       mp4Btn.classList.add('loading');
@@ -10188,51 +10219,32 @@ const setupMotionDropZones2d = () => {
     }
 
     try {
-      // Get icon properties
       const exportSizeInput = $('#export-size-input') as HTMLInputElement;
       const iconSize = parseInt(exportSizeInput?.value || '48', 10);
-      const repeatCount = motionRepeatSelect.value === 'infinite' ? -1 : 1;
+      const repeatCount = motionRepeatSelect.value === 'infinite' ? 3 : 1;
       const duration = parseFloat(animation.duration);
-      const fps = 30; // Use 30fps for MP4 to reduce file size
-      const totalFrames = Math.ceil(duration * fps);
-      const actualFrames = repeatCount === -1 ? totalFrames * 3 : totalFrames * repeatCount; // For infinite, create 3 loops
+      const totalDuration = duration * repeatCount;
+      const fps = 30;
 
-      // CSS Animation → MP4: Render CSS animation frames to Canvas, then encode to MP4
-      // This approach calculates animation properties (opacity, scale, rotation, etc.) 
-      // based on the CSS keyframes and renders them frame-by-frame to Canvas
       const canvas = document.createElement('canvas');
       canvas.width = iconSize;
       canvas.height = iconSize;
       const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        throw new Error('Failed to get canvas context');
-      }
+      if (!ctx) throw new Error('Failed to get canvas context');
 
       const colorPicker = $('#color-picker') as HTMLInputElement;
       const iconColor = colorPicker?.value || '#0F172A';
-      
-      // Get icon character - use selectedIcon if available, otherwise use iconName
       let iconChar = iconName;
-      if (selectedIcon && selectedIcon.name) {
-        iconChar = selectedIcon.name;
-      }
+      if (selectedIcon && selectedIcon.name) iconChar = selectedIcon.name;
 
-      // Capture frames by calculating CSS animation properties for each frame
-      const frames: string[] = [];
       const centerX = iconSize / 2;
       const centerY = iconSize / 2;
 
-      for (let frame = 0; frame < actualFrames; frame++) {
-        const progress = repeatCount === -1 
-          ? (frame % totalFrames) / totalFrames 
-          : frame / (actualFrames - 1);
-        
-        // Clear canvas
+      const drawFrame = (progress: number) => {
         ctx.clearRect(0, 0, iconSize, iconSize);
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, iconSize, iconSize);
 
-        // Calculate CSS animation properties based on animation type
         let opacity = 1;
         let scale = 1;
         let rotation = 0;
@@ -10256,121 +10268,78 @@ const setupMotionDropZones2d = () => {
         } else if (animationName === 'rotate') {
           rotation = progress * 360;
         } else if (animationName === 'shake') {
-          const shakeAmount = Math.sin(progress * Math.PI * 10) * 3;
-          rotation = shakeAmount;
+          rotation = Math.sin(progress * Math.PI * 10) * 3;
         } else if (animationName === 'pulse') {
           scale = progress < 0.5 ? 1 + 0.1 * (progress / 0.5) : 1.1 - 0.1 * ((progress - 0.5) / 0.5);
         } else if (animationName === 'breathe') {
           scale = 0.9 + 0.1 * Math.sin(progress * Math.PI * 2);
         }
 
-        // Apply CSS animation transformations to Canvas
         ctx.save();
         ctx.globalAlpha = opacity;
         ctx.translate(centerX + translateX, centerY + translateY);
         ctx.rotate((rotation * Math.PI) / 180);
         ctx.scale(scale, scale);
         ctx.translate(-centerX, -centerY);
-
-        // Draw icon (using Material Symbols font)
         ctx.fillStyle = iconColor;
         ctx.font = `${iconSize * 0.8}px 'Material Symbols Outlined'`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(iconChar, centerX, centerY);
-
         ctx.restore();
+      };
 
-        // Convert canvas frame to image data
-        const frameData = canvas.toDataURL('image/png');
-        frames.push(frameData);
-      }
+      // Determine supported MIME type
+      const mimeType = MediaRecorder.isTypeSupported('video/mp4')
+        ? 'video/mp4'
+        : MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+        ? 'video/webm;codecs=vp9'
+        : 'video/webm';
+      const ext = mimeType.startsWith('video/mp4') ? 'mp4' : 'webm';
 
-      // Load FFmpeg
-      const ffmpeg = await loadFFmpeg();
-      if (!ffmpeg) {
-        throw new Error('Failed to load FFmpeg');
-      }
+      const stream = canvas.captureStream(fps);
+      const recorder = new MediaRecorder(stream, { mimeType });
+      const chunks: BlobPart[] = [];
 
-      // Write frames to FFmpeg
-      for (let i = 0; i < frames.length; i++) {
-        const frameData = frames[i];
-        const base64Data = frameData.split(',')[1];
-        const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-        await ffmpeg.writeFile(`frame_${String(i).padStart(6, '0')}.png`, binaryData);
-      }
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
 
-      // Update loading text
-      if (imageGenerationLoaderText) {
-        imageGenerationLoaderText.textContent = 'Encoding MP4...';
-      }
+      const recordingDone = new Promise<void>((resolve) => {
+        recorder.onstop = () => resolve();
+      });
 
-      await ffmpeg.exec([
-        '-framerate', String(fps),
-        '-i', 'frame_%06d.png',
-        '-c:v', 'libx264',
-        '-pix_fmt', 'yuv420p',
-        '-crf', '23',
-        '-preset', 'medium',
-        '-y', 'output.mp4'
-      ]);
+      recorder.start();
 
-      // Read output
-      const data = await ffmpeg.readFile('output.mp4');
-      // Handle both Uint8Array and string types
-      let blobData: Uint8Array;
-      if (data instanceof Uint8Array) {
-        blobData = data;
-      } else if (typeof data === 'string') {
-        blobData = new Uint8Array(atob(data).split('').map(c => c.charCodeAt(0)));
-      } else {
-        // Handle ArrayBuffer or other types
-        const buffer = (data as any).buffer || data;
-        blobData = buffer instanceof ArrayBuffer 
-          ? new Uint8Array(buffer)
-          : new Uint8Array(buffer as ArrayBufferLike);
-      }
-      // Use slice to ensure we have a proper ArrayBuffer
-      const arrayBuffer = blobData.buffer.slice(blobData.byteOffset, blobData.byteOffset + blobData.byteLength);
-      const blob = new Blob([arrayBuffer], { type: 'video/mp4' });
+      // Animate in real-time using requestAnimationFrame
+      const startTime = performance.now();
+      const animate = (now: number) => {
+        const elapsed = (now - startTime) / 1000;
+        if (elapsed >= totalDuration) {
+          recorder.stop();
+          return;
+        }
+        const cycleProgress = (elapsed % duration) / duration;
+        drawFrame(cycleProgress);
+        requestAnimationFrame(animate);
+      };
+      drawFrame(0);
+      requestAnimationFrame(animate);
+
+      await recordingDone;
+
+      const blob = new Blob(chunks, { type: mimeType });
       const url = URL.createObjectURL(blob);
-
-      // Download
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${iconName}_${animationName}.mp4`;
+      a.download = `${iconName}_${animationName}.${ext}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      // Cleanup
-      for (let i = 0; i < frames.length; i++) {
-        try {
-          await ffmpeg.deleteFile(`frame_${String(i).padStart(6, '0')}.png`);
-        } catch (e) {
-          // Ignore cleanup errors
-        }
-      }
-      try {
-        await ffmpeg.deleteFile('output.mp4');
-      } catch (e) {
-        // Ignore cleanup errors
-      }
-
-      // Hide loading modal and show success
-      if (imageGenerationLoaderModal) {
-        triggerConfetti(imageGenerationLoaderModal);
-        imageGenerationLoaderModal.classList.add('hidden');
-      }
-      
-      showToast({ type: 'success', title: 'Downloaded', body: 'MP4 file downloaded successfully.' });
+      showToast({ type: 'success', title: 'Downloaded', body: 'Video file downloaded successfully.' });
     } catch (error) {
       console.error('MP4 conversion failed:', error);
-      if (imageGenerationLoaderModal) {
-        imageGenerationLoaderModal.classList.add('hidden');
-      }
-      showToast({ type: 'error', title: 'Error', body: 'Failed to convert to MP4. Please try again.' });
+      showToast({ type: 'error', title: 'Error', body: 'Failed to convert to video. Please try again.' });
     } finally {
       if (mp4Btn) {
         mp4Btn.classList.remove('loading');
@@ -12319,6 +12288,200 @@ Apply the main color (${objectColor}) thoughtfully as the primary/accent color o
             imageGenerationLoaderModal?.classList.add('hidden');
         }
     });
+    // Multi-view handler
+    const multiviewModal = $('#multiview-modal');
+    const multiviewGrid = $('#multiview-grid');
+    const multiviewCloseBtn = $('#multiview-close-btn');
+
+    multiviewCloseBtn?.addEventListener('click', () => {
+        multiviewModal?.classList.add('hidden');
+    });
+    multiviewModal?.addEventListener('click', (e) => {
+        if (e.target === multiviewModal) multiviewModal.classList.add('hidden');
+    });
+
+    // Each angle: explicit X/Y/Z rotation values for unambiguous camera positioning
+    const MULTIVIEW_ANGLES: { label: string; cameraOverride: Record<string, string>; angleDescription: string }[] = [
+        {
+            label: 'Front',
+            cameraOverride: { rotationX: '0', rotationY: '0', rotationZ: '0' },
+            angleDescription: 'Front view. Object rotation X=0° Y=0° Z=0°. Camera faces the object head-on. Only the front face is visible.',
+        },
+        {
+            label: 'Back',
+            cameraOverride: { rotationX: '0', rotationY: '180', rotationZ: '0' },
+            angleDescription: 'Back view. Object rotation X=0° Y=180° Z=0°. The object is rotated 180° around Y-axis. Only the back face is visible.',
+        },
+        {
+            label: 'Side Right',
+            cameraOverride: { rotationX: '0', rotationY: '90', rotationZ: '0' },
+            angleDescription: 'Pure right side profile. The camera is positioned at the character\'s LEFT shoulder, looking directly at the LEFT side of the character. The character\'s front/face is NOT visible — only the LEFT side profile is visible. The character\'s back is on the right side of the image and the front is on the left side of the image.',
+        },
+        {
+            label: 'Side Left',
+            cameraOverride: { rotationX: '0', rotationY: '270', rotationZ: '0' },
+            angleDescription: 'Pure left side profile. The camera is positioned at the character\'s RIGHT shoulder, looking directly at the RIGHT side of the character. The character\'s front/face is NOT visible — only the RIGHT side profile is visible. The character\'s back is on the left side of the image and the front is on the right side of the image. This is the OPPOSITE direction of Side Right.',
+        },
+        {
+            label: 'Isometric Right',
+            cameraOverride: { rotationX: '35.264', rotationY: '45', rotationZ: '0' },
+            angleDescription: 'Isometric view from the front-right diagonal. Camera is diagonally positioned to the right of the character. The character\'s FRONT face and LEFT side face are both equally visible. The character appears to face slightly to the LEFT in the image. Viewed from above at 35° tilt.',
+        },
+        {
+            label: 'Isometric Left',
+            cameraOverride: { rotationX: '35.264', rotationY: '315', rotationZ: '0' },
+            angleDescription: 'Isometric view from the front-left diagonal. Camera is diagonally positioned to the left of the character. The character\'s FRONT face and RIGHT side face are both equally visible. The character appears to face slightly to the RIGHT in the image. Viewed from above at 35° tilt. This is the OPPOSITE direction of Isometric Right.',
+        },
+    ];
+
+    // Cache: imageId → rendered grid HTML
+    const multiviewCache = new Map<string, string>();
+
+    const renderMultiviewCards = (results: ({ data: string; mimeType: string } | null)[], subject: string) => {
+        if (!multiviewGrid) return;
+        multiviewGrid.innerHTML = '';
+        results.forEach((result, i) => {
+            const label = MULTIVIEW_ANGLES[i].label;
+            const card = document.createElement('div');
+            card.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+
+            if (result) {
+                const dataUrl = `data:${result.mimeType};base64,${result.data}`;
+                const filename = `${subject.replace(/\s+/g, '_')}_${label.replace(/\s+/g, '_')}.png`;
+                card.innerHTML = `
+                    <div style="width:100%;padding-top:100%;position:relative;background:var(--surface-secondary,#f5f5f5);border-radius:12px;overflow:hidden;">
+                        <img src="${dataUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;" alt="${label}">
+                    </div>
+                    <span style="font-size:12px;font-weight:500;text-align:center;color:var(--text-secondary);">${label}</span>
+                    <a href="${dataUrl}" download="${filename}" class="secondary-btn" style="width:100%;justify-content:center;font-size:12px;padding:6px 8px;">
+                        <span class="material-symbols-outlined" style="font-size:16px;">download</span> Save
+                    </a>`;
+            } else {
+                card.innerHTML = `
+                    <div style="width:100%;padding-top:100%;position:relative;background:var(--surface-secondary,#f5f5f5);border-radius:12px;">
+                        <span class="material-symbols-outlined" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:32px;">broken_image</span>
+                    </div>
+                    <span style="font-size:12px;font-weight:500;text-align:center;color:var(--text-secondary);">${label}</span>`;
+            }
+            multiviewGrid.appendChild(card);
+        });
+    };
+
+    detailsMultiviewBtn?.addEventListener('click', async () => {
+        if (!currentGeneratedImage) return;
+
+        const imageId = currentGeneratedImage.id;
+        const btn = detailsMultiviewBtn;
+
+        // If cached, just reopen modal without regenerating
+        const cachedHtml = multiviewCache.get(imageId);
+        if (cachedHtml) {
+            if (multiviewGrid) multiviewGrid.innerHTML = cachedHtml;
+            multiviewModal?.classList.remove('hidden');
+            return;
+        }
+
+        updateButtonLoadingState(btn, true);
+        if (multiviewGrid) multiviewGrid.innerHTML = '';
+        multiviewModal?.classList.remove('hidden');
+
+        // Placeholder cards
+        MULTIVIEW_ANGLES.forEach(({ label }) => {
+            const card = document.createElement('div');
+            card.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+            card.innerHTML = `
+                <div style="width:100%;padding-top:100%;position:relative;background:var(--surface-secondary,#f5f5f5);border-radius:12px;overflow:hidden;">
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                        <div class="btn-loader" style="position:static;"></div>
+                    </div>
+                </div>
+                <span style="font-size:12px;font-weight:500;text-align:center;color:var(--text-secondary);">${label}</span>`;
+            multiviewGrid?.appendChild(card);
+        });
+
+        let baseTemplate: any = {};
+        try { baseTemplate = JSON.parse(currentGeneratedImage.styleConstraints); } catch {}
+        const subject = baseTemplate.subject || currentGeneratedImage.subject || 'a 3D icon';
+
+        const refData = currentGeneratedImage.data;
+        const refMime = currentGeneratedImage.mimeType || 'image/png';
+
+        const generateViewImage = async (cameraOverride: Record<string, string>, label: string, angleDescription: string): Promise<{ data: string; mimeType: string } | null> => {
+            try {
+                const prompt = `You are a 3D rendering engine. The reference image shows a 3D icon/character.
+
+Your task: Reproduce this EXACT SAME 3D character/object with identical design, colors, materials, proportions, and style — but rendered from this specific camera angle:
+
+CAMERA ANGLE: ${angleDescription}
+
+STRICT RULES:
+1. Character/object design must be 100% identical to the reference image
+2. Colors, materials, textures, and style must be exactly the same
+3. ONLY the camera viewing angle changes — rotate around the object, do NOT change the object itself
+4. Transparent/white background
+5. Same 3D render quality and lighting style as the reference
+6. The camera angle described above is MANDATORY — do not default to the front view`;
+
+                const response = await ai.models.generateContent({
+                    model: 'gemini-2.5-flash-image',
+                    contents: {
+                        parts: [
+                            { inlineData: { mimeType: refMime, data: refData } },
+                            { text: prompt },
+                        ],
+                    },
+                    config: { responseModalities: [Modality.IMAGE], temperature: 0.4 },
+                });
+                const part = response.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData);
+                if (part?.inlineData?.data) return { data: part.inlineData.data, mimeType: part.inlineData.mimeType || 'image/png' };
+            } catch {}
+            return null;
+        };
+
+        const viewResults: ({ data: string; mimeType: string } | null)[] = new Array(MULTIVIEW_ANGLES.length).fill(null);
+        const cards = multiviewGrid ? Array.from(multiviewGrid.children) as HTMLElement[] : [];
+
+        const updateCard = (i: number, result: { data: string; mimeType: string } | null) => {
+            const card = cards[i];
+            if (!card) return;
+            const label = MULTIVIEW_ANGLES[i].label;
+            const filename = `${subject.replace(/\s+/g, '_')}_${label.replace(/\s+/g, '_')}.png`;
+            if (result) {
+                const dataUrl = `data:${result.mimeType};base64,${result.data}`;
+                card.innerHTML = `
+                    <div style="width:100%;padding-top:100%;position:relative;background:var(--surface-secondary,#f5f5f5);border-radius:12px;overflow:hidden;">
+                        <img src="${dataUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;" alt="${label}">
+                    </div>
+                    <span style="font-size:12px;font-weight:500;text-align:center;color:var(--text-secondary);">${label}</span>
+                    <a href="${dataUrl}" download="${filename}" class="secondary-btn" style="width:100%;justify-content:center;font-size:12px;padding:6px 8px;">
+                        <span class="material-symbols-outlined" style="font-size:16px;">download</span> Save
+                    </a>`;
+            } else {
+                card.innerHTML = `
+                    <div style="width:100%;padding-top:100%;position:relative;background:var(--surface-secondary,#f5f5f5);border-radius:12px;">
+                        <span class="material-symbols-outlined" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:32px;">broken_image</span>
+                    </div>
+                    <span style="font-size:12px;font-weight:500;text-align:center;color:var(--text-secondary);">${label}</span>`;
+            }
+        };
+
+        await Promise.all(
+            MULTIVIEW_ANGLES.map(({ cameraOverride, label, angleDescription }, i) =>
+                generateViewImage(cameraOverride, label, angleDescription).then(result => {
+                    viewResults[i] = result;
+                    updateCard(i, result);
+                })
+            )
+        );
+
+        // Cache rendered HTML keyed to this image
+        if (multiviewGrid) {
+            multiviewCache.set(imageId, multiviewGrid.innerHTML);
+        }
+
+        updateButtonLoadingState(btn, false);
+    });
+
     resultImage?.addEventListener('click', () => {
 
         if (!currentGeneratedImage) return;
