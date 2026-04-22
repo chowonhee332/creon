@@ -4,48 +4,183 @@
 
 @layer base {
   :root {
+    /* ── Scale: Blue ── */
+    --color-blue-50: #EBF7FA;
+    --color-blue-100: #D2EDFA;
+    --color-blue-200: #B9E3FA;
+    --color-blue-300: #87D7FF;
+    --color-blue-400: #57C7FF;
+    --color-blue-500: #009CEB;
+    --color-blue-600: #0088CC;
+    --color-blue-700: #0077B2;
+    --color-blue-800: #006199;
+    --color-blue-900: #004C73;
+    --color-blue-950: #003B59;
+
+    /* ── Scale: Gray ── */
+    --color-gray-00: #ffffff;
+    --color-gray-50: #f7f8fa;
+    --color-gray-100: #f2f3f6;
+    --color-gray-200: #eaebee;
+    --color-gray-300: #dcdee3;
+    --color-gray-400: #d1d3d8;
+    --color-gray-500: #adb1ba;
+    --color-gray-600: #868b94;
+    --color-gray-700: #4d5159;
+    --color-gray-800: #393A40;
+    --color-gray-900: #212124;
+
+    /* ── Scale: Status ── */
+    --color-red-500: #FF4133;
+    --color-red-600: #FA2314;
+    --color-green-500: #1AA174;
+    --color-yellow-400: #DEA651;
+
+    /* ── Alpha ── */
+    --color-blue-alpha-50: #009CEB0d;
+    --color-blue-alpha-100: #009CEB1a;
+    --color-blue-alpha-200: #009CEB33;
+    --color-gray-alpha-50: #0017580d;
+    --color-gray-alpha-200: #19233e33;
+
+    /* ── Semantic: Brand ── */
+    --color-primary: #009CEB;
+    --color-primary-low: #009CEB24;
+    --color-primary-hover: #57C7FF;
+    --color-primary-pressed: #0088CC;
+    --color-on-primary: #ffffff;
+    --color-secondary: #212124;
+
+    /* ── Semantic: Status ── */
+    --color-success: #1AA174;
+    --color-warning: #DEA651;
+    --color-danger: #FA2314;
+    --color-danger-low: #FF41330d;
+
+    /* ── Semantic: Text ── */
+    --color-ink-text: #212124;
+    --color-ink-text-low: #868b94;
+
+    /* ── Semantic: Surface ── */
+    --color-paper-background: #f2f3f6;
+    --color-paper-default: #ffffff;
+    --color-paper-contents: #f7f8fa;
+    --color-paper-dialog: #ffffff;
+
+    /* ── Semantic: Divider ── */
+    --color-divider-1: #0017580d;
+    --color-divider-2: #eaebee;
+    --color-overlay-dim: #00000080;
+
+    /* ── Spacing (4px base grid) ── */
+    --spacing-1: 4px;
+    --spacing-2: 8px;
+    --spacing-3: 12px;
+    --spacing-4: 16px;
+    --spacing-5: 24px;
+    --spacing-6: 32px;
+    --spacing-7: 48px;
+
+    /* ── Border Radius ── */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+
+    /* ── Shadow ── */
+    --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.14);
+
+    /* ── Legacy aliases (기존 코드 호환) ── */
+    --accent-color: var(--color-primary);
+    --bg-color: var(--color-paper-background);
+    --surface-color: var(--color-paper-default);
+    --text-primary: var(--color-ink-text);
+    --text-secondary: var(--color-ink-text-low);
+    --border-color: var(--color-divider-2);
+
+    /* ── shadcn/ui 호환 (shadcn 컴포넌트가 있는 경우) ── */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 240 4% 13%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 240 4% 13%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --popover-foreground: 240 4% 13%;
+    --primary: 199 100% 46%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 13% 96%;
+    --secondary-foreground: 240 4% 13%;
+    --muted: 220 13% 96%;
+    --muted-foreground: 220 9% 50%;
+    --accent: 220 13% 96%;
+    --accent-foreground: 240 4% 13%;
+    --destructive: 4 95% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 199 100% 46%;
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+    /* ── Scale overrides ── */
+    --color-blue-500: #079AE3;
+    --color-blue-600: #5EC4F7;
+    --color-gray-00: #17171a;
+    --color-gray-50: #212124;
+    --color-gray-100: #2b2e33;
+    --color-gray-200: #34373d;
+    --color-gray-300: #43474f;
+    --color-gray-900: #eaebee;
+
+    /* ── Semantic overrides ── */
+    --color-primary: #079AE3;
+    --color-primary-low: #079AE31a;
+    --color-primary-hover: #5EC4F7;
+    --color-primary-pressed: #0077B2;
+    --color-secondary: #eaebee;
+    --color-success: #1E9C72;
+    --color-warning: #F0BB6C;
+    --color-danger: #F2291B;
+    --color-danger-low: #F746390d;
+
+    --color-blue-alpha-50: #079AE30d;
+    --color-blue-alpha-100: #079AE31a;
+    --color-blue-alpha-200: #079AE333;
+    --color-gray-alpha-50: #ffffff0d;
+    --color-gray-alpha-200: #ffffff33;
+
+    --color-ink-text: #eaebee;
+    --color-ink-text-low: #868b94;
+    --color-paper-background: #17171a;
+    --color-paper-default: #212124;
+    --color-paper-contents: #17171a;
+    --color-paper-dialog: #2b2e33;
+    --color-divider-1: #ffffff0d;
+    --color-divider-2: #34373d;
+
+    /* ── shadcn/ui 다크 호환 ── */
+    --background: 240 4% 10%;
+    --foreground: 220 13% 91%;
+    --card: 240 4% 13%;
+    --card-foreground: 220 13% 91%;
+    --popover: 240 4% 13%;
+    --popover-foreground: 220 13% 91%;
+    --primary: 199 97% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 13% 18%;
+    --secondary-foreground: 220 13% 91%;
+    --muted: 220 13% 18%;
+    --muted-foreground: 220 9% 65%;
+    --accent: 220 13% 18%;
+    --accent-foreground: 220 13% 91%;
+    --destructive: 4 90% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 21%;
+    --input: 220 13% 21%;
+    --ring: 199 97% 45%;
   }
 }
 
@@ -55,5 +190,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-color: var(--color-paper-background);
+    color: var(--color-ink-text);
   }
 }
