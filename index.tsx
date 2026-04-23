@@ -6882,12 +6882,12 @@ Hard rules for every suggestion:
 - Do NOT introduce, add, or remove any props, characters, wardrobe pieces, particles, or environmental elements.
 - Describe only motions using the existing subject or existing environmental elements (e.g., gentle limb movement, breathing, water ripples, sunlight shifts) or subtle camera motion that keeps the subject fully visible.
 - Avoid any wording about transforming, morphing, changing shapes, swapping outfits, or replacing parts of the subject.
-- Motions must be seamless, looping, and subtle so that the source frame can be used as both the start and end without visible jumps.
+- CRITICAL: Motion MUST be perfectly seamless and looping. The first frame and the last frame MUST be identical so it can loop infinitely without any visible jump or cut.
 For each suggestion, provide:
 1. 'name': A short, catchy category name in Korean (e.g., '부드러운 루핑').
-2. 'description': A brief, engaging description in Korean of the motion style. You can use <b> tags for emphasis (e.g., '<b>자연스럽게 반복되는 움직임.</b> 시작과 끝이 매끄럽게 연결됩니다.').
-3. 'english': A concise, direct text-to-video prompt in English that embodies the motion style. The prompt must explicitly state that no new props or subjects appear, that the original design stays intact, and that the subject remains fully visible within the frame.
-4. 'korean': A lively, descriptive version of the prompt in Korean for the user to read, mentioning that it's a looping animation while also stating that 새로운 요소가 추가되지 않음을 강조하세요.
+2. 'description': A brief, engaging description in Korean of the motion style. You can use <b> tags for emphasis (e.g., '<b>완벽한 무한 루프 움직임.</b> 시작과 끝이 동일하여 매끄럽게 연결됩니다.').
+3. 'english': A concise, direct text-to-video prompt in English. MUST include: "Seamless loop, first and last frames are identical, infinite loop, smooth transition."
+4. 'korean': A lively version in Korean, emphasizing that it's a seamless infinite loop (무한 루핑).
 Return the 5 suggestions as a JSON array.`;
         
         const imagePart = {
@@ -7012,47 +7012,43 @@ Return the 5 suggestions as a JSON array.`;
 
     try {
         const subject = currentGeneratedImage2d.subject;
-        const textPrompt = `Analyze the provided vector-style icon of '${subject}'. Create 3 MINIMAL micro-interaction motion ideas - these must be EXTREMELY SUBTLE movements.
-
+        const textPrompt = `Analyze the provided vector-style icon of '${subject}'. Create 3 BALANCED micro-interaction motion ideas that make the icon feel alive without being distracting.
+        
 CRITICAL CONSTRAINTS - 2D Icon Micro-Interactions:
-1. MINIMAL MOVEMENT ONLY:
-   - Maximum 5% scale change (e.g., 1.0 to 1.05)
-   - Maximum 10 degree rotation (for full icon rotation only)
-   - ⚠️ NO VERTICAL MOVEMENT (NO up/down, NO floating, NO bobbing, NO bouncing)
-   - Horizontal movement ONLY (left/right, maximum 3-5 pixels)
-   - NO large movements, NO position changes that alter composition
+1. MODERATE MICRO-MOVEMENT:
+   - Scale changes up to 8-10% (e.g., 1.0 to 1.10) for gentle breathing
+   - Rotation up to 15-20 degrees (subtle tilting or swinging)
+   - Vertical movement (gentle bobbing or floating up to 10 pixels)
+   - Horizontal movement (subtle swaying up to 10 pixels)
    
-2. PRESERVE EVERYTHING:
-   - Original icon shape, design, and layout MUST stay 100% identical
+2. PRESERVE ICON INTEGRITY:
+   - Original icon shape and design MUST stay 100% identical
    - NO camera movement, NO zoom, NO perspective change
-   - Icon must stay in the EXACT same position vertically (NO up/down movement)
    - Background color and transparency unchanged
    
-3. ALLOWED MICRO-INTERACTIONS ONLY:
-   - Gentle breathing/pulsing (scale 1.0 ↔ 1.03) - expand and contract in place
-   - Subtle rotation in place (±5-10 degrees, full icon rotates around its center)
-   - Horizontal sway (3-5 pixels left/right ONLY, NO vertical movement)
-   - Gentle idle animation (horizontal oscillation or subtle scale, NO vertical bobbing)
+3. SEAMLESS INFINITE LOOP (MANDATORY):
+   - The motion MUST loop perfectly.
+   - The FIRST frame and the LAST frame MUST be identical.
+   - NO visible jumps, cuts, or resets between loops.
    
-4. STRICTLY FORBIDDEN:
-   - ⚠️ NO VERTICAL MOVEMENT: NO up/down, NO floating, NO rising, NO falling, NO bouncing, NO vertical bobbing
-   - NO vertical shift, NO vertical translation, NO vertical displacement
-   - NO swaying, swinging, or pendulum motions (unless horizontal only)
-   - NO new elements, particles, effects, glows
-   - NO composition changes
-   - NO dramatic movements
-   - NO flying, jumping, or large animations
-   - NO camera work or scene changes
+4. REFINED DYNAMIC MOTIONS:
+   - Gentle "breathing" or "pulsing" (scale 1.0 ↔ 1.08)
+   - Subtle "bobbing" (vertical movement up to 10 pixels)
+   - Soft "tilting" or "swinging" (±15 degrees)
+   - "Floating" or "levitation" effect (steady in place)
+   
+5. FORBIDDEN:
+   - NO large jumps, NO fast shaking, NO extreme scaling
+   - NO new elements, particles, or glows added
+   - NO composition changes or dramatic scene shifts
 
 For each micro-interaction:
-1. 'name': Korean title (예: '미세한 호흡', '수평 흔들림', '제자리 회전')
+1. 'name': Korean title (예: '잔잔한 호흡', '부드러운 흔들림', '가벼운 띄움')
 2. 'description': Korean explanation with <b> tags
-3. 'english': English prompt emphasizing "subtle", "gentle", "minimal", "in place", "seamless loop", "horizontal only" or "rotation only", "NO vertical movement"
-4. 'korean': Korean description stating this is 매우 미세한 마이크로 인터랙션
+3. 'english': English prompt emphasizing "seamless loop", "first and last frames identical", "infinite loop", "smooth", "elegant", "in place"
+4. 'korean': Korean description emphasizing '무한 루핑' (seamless loop) and '첫 프레임과 마지막 프레임 일치'.
 
-IMPORTANT: Focus on horizontal movements (left/right), scale changes (breathing), or gentle rotation. Absolutely NO vertical (up/down) movements. NO floating, NO bobbing, NO bouncing.
-
-Return as JSON array with exactly 3 minimal suggestions.`;
+Return as JSON array with exactly 3 tasteful suggestions.`;
 
         const imagePart = {
           inlineData: {
@@ -7266,14 +7262,14 @@ HARD RULES:
 - Preserve all existing design, colors, proportions, accessories, and background exactly
 - No new elements, props, or characters may appear
 - The 3D character must stay fully visible in frame at all times
-- Motion must loop seamlessly (start frame = end frame, no visible cut)
+- CRITICAL: Motion MUST loop perfectly seamlessly. The FIRST frame and the LAST frame MUST be identical for a satisfying infinite loop.
 - Keep motions subtle and polished — this is a premium 3D icon, not a cartoon
 
 For each suggestion provide:
 1. 'name': Short Korean label (2–4 characters, e.g. '둥실 부유', '반짝 호흡')
 2. 'description': 1–2 sentences in Korean with <b> tags on the key action. Make it feel premium and enticing.
-3. 'english': A structured video prompt in English following this format: "[Subject description]. [Specific motion action with physics detail]. [Camera behavior]. Loop seamlessly. No new elements added. Original 3D design preserved exactly."
-4. 'korean': The same prompt in Korean, written for the user to read. Emphasize the looping quality and that no new elements appear.
+3. 'english': A structured video prompt in English following this format: "[Subject description]. [Specific motion action with physics detail]. [Camera behavior]. Seamless infinite loop. First and last frames are identical. No new elements added. Original 3D design preserved exactly."
+4. 'korean': The same prompt in Korean, written for the user to read. Emphasize the infinite loop (무한 루핑) and that the first/last frames are identical.
 
 Return as a JSON array of 5 objects.`;
         
