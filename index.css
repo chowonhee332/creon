@@ -6618,3 +6618,28 @@ canvas[style*="position: fixed"] {
   color: var(--text-primary);
 }
 
+
+.storage-card {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+.storage-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.page-loading {
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-loading__spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top-color: var(--accent-color, #2962FF);
+  border-radius: 50%;
+  animation: rotate 0.7s linear infinite;
+}

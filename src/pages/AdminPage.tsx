@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import PageLoading from '../components/PageLoading';
 
 interface Profile {
   id: string;
@@ -171,7 +172,9 @@ export default function AdminPage() {
   useEffect(() => {
     if (!isAdmin) return;
     setLoading(true);
-    Promise.all([loadOverview(), loadUsers(), loadContent()]).finally(() => setLoading(false));
+    const minDelay = new Promise(r => setTimeout(r, 600));
+    Promise.all([loadOverview(), loadUsers(), loadContent()])
+      .finally(() => minDelay.then(() => setLoading(false)));
   }, [isAdmin, loadOverview, loadUsers, loadContent]);
 
   const toggleBlock = async (user: Profile) => {
@@ -216,12 +219,7 @@ export default function AdminPage() {
     return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
   };
 
-  if (isAdmin === null || loading) return (
-    <div style={styles.center}>
-      <span className="material-symbols-outlined" style={{ fontSize: 32, opacity: 0.4 }}>hourglass_empty</span>
-      <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>불러오는 중...</p>
-    </div>
-  );
+  if (isAdmin === null || loading) return <PageLoading />;
 
   if (!isAdmin) return (
     <div style={styles.center}>
@@ -469,10 +467,10 @@ const styles: Record<string, React.CSSProperties> = {
   tab: { padding: '10px 20px', fontSize: 14, fontWeight: 400, background: 'none', border: 'none', borderBottom: '2px solid transparent', color: 'var(--text-secondary)', cursor: 'pointer' },
   tabActive: { fontWeight: 600, borderBottom: '2px solid var(--accent-color, #2962FF)', color: 'var(--accent-color, #2962FF)' },
   statRow: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 16 },
-  statCard: { background: '#ffffff', borderRadius: 12, padding: '20px 24px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' },
+  statCard: { background: 'var(--surface-color)', borderRadius: 12, padding: '20px 24px' },
   statLabel: { margin: 0, fontSize: 13, color: 'var(--text-secondary)' },
   statValue: { margin: '8px 0 0', fontSize: 28, fontWeight: 700 },
-  section: { background: '#ffffff', borderRadius: 12, padding: '20px 24px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' },
+  section: { background: 'var(--surface-color)', borderRadius: 12, padding: '20px 24px' },
   sectionTitle: { margin: '0 0 16px', fontSize: 14, fontWeight: 600 },
   chart: { display: 'flex', alignItems: 'flex-end', gap: 6, height: 100 },
   barWrap: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, flex: 1 },
@@ -485,7 +483,7 @@ const styles: Record<string, React.CSSProperties> = {
   badge: { display: 'inline-block', padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 500, color: 'var(--text-primary)' },
   actionBtn: { padding: '4px 10px', fontSize: 12, background: 'none', border: '1px solid var(--border-color)', borderRadius: 6, cursor: 'pointer', color: 'var(--text-primary)' },
   contentGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 12 },
-  contentCard: { background: 'var(--input-bg)', borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border-color)' },
+  contentCard: { background: 'var(--surface-color)', borderRadius: 12, overflow: 'hidden' },
   contentPreview: { width: '100%', aspectRatio: '1', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   media: { width: '100%', height: '100%', objectFit: 'cover' },
   center: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 400, gap: 4 },
