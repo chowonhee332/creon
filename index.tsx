@@ -1583,6 +1583,19 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
     try {
       localStorage.setItem('imageLibrary', JSON.stringify(imageLibrary));
     } catch (e) {
+      if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+        console.warn("localStorage quota exceeded, reducing imageLibrary size...");
+        // Keep removing the oldest items until it fits
+        while (imageLibrary.length > 0) {
+          imageLibrary.pop();
+          try {
+            localStorage.setItem('imageLibrary', JSON.stringify(imageLibrary));
+            return;
+          } catch (retryErr) {
+            // Continue removing items
+          }
+        }
+      }
       console.error("Failed to save image library to localStorage", e);
     }
   };
@@ -2805,7 +2818,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
         logGeneration('image', 'gemini-2.5-flash-image', imagePromptSubjectInput2d.value).catch(() => {});
 
         imageLibrary.unshift(newLibraryItem);
-        if (imageLibrary.length > 20) {
+        if (imageLibrary.length > 10) {
             imageLibrary.pop();
         }
 
@@ -10837,7 +10850,11 @@ regenerate3DBtn?.addEventListener('click', () => {
         
         // Parse the original template and update icon color only
         try {
-            const template = JSON.parse(currentGeneratedImage2d.styleConstraints);
+            // Handle case where styleConstraints might contain human-readable prefix (starts with "IMPORTANT:")
+            const constraints = currentGeneratedImage2d.styleConstraints;
+            const jsonStart = constraints.indexOf('{');
+            const template = JSON.parse(jsonStart !== -1 ? constraints.substring(jsonStart) : constraints);
+            
             template.controls.color.primary = iconColor;
             // Ensure background stays white
             template.output.background = '#FFFFFF';
