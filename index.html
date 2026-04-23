@@ -12,7 +12,7 @@
       rel="stylesheet"
     />
     <!-- Specific icon support for Rounded style -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=book,book_2,book_3,book_4,book_5,book_6" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
     <!-- Material Icons for compatibility -->
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -154,7 +154,9 @@
                   <div class="custom-dropdown" id="custom-studio-selector">
                     <button class="custom-dropdown-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
                       <span class="custom-dropdown-value">3D</span>
-                      <span class="material-symbols-outlined custom-dropdown-icon">expand_more</span>
+                      <svg class="custom-dropdown-icon" viewBox="0 -960 960 960" fill="currentColor" width="20" height="20">
+                        <path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/>
+                      </svg>
                     </button>
                     <div class="custom-dropdown-menu hidden" role="listbox">
                       <button class="custom-dropdown-option" role="option" data-value="icon" aria-selected="false">
@@ -179,7 +181,9 @@
                     </button>
                   </div>
                   <button id="generate-btn" class="generate-btn" disabled style="opacity: 0.5; cursor: not-allowed;">
-                    <span class="material-symbols-outlined generate-btn-icon">auto_awesome</span>
+                    <svg class="generate-btn-icon" viewBox="0 -960 960 960" fill="currentColor" width="20" height="20" style="vertical-align: middle; margin-right: 6px; display: inline-block;">
+                      <path d="m424-408-88-192-192-88 192-88 88-192 88 192 192 88-192 88-88 192Zm424 248-32-72-72-32 72-32 32-72 32 72 72 32-72 32-32 72Zm0-368-20-44-44-20 44-20 20-44 20 44 44 20-44 20-20 44Z"/>
+                    </svg>
                     <span class="btn-text">Generate</span>
                   </button>
             </div>
