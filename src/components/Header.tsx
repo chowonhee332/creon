@@ -28,7 +28,7 @@ export const Header: React.FC = () => {
     { id: 'page-icons', label: 'Icon Studio' },
     { id: 'page-id-2d', label: '2D Studio' },
     { id: 'page-id-3d', label: '3D Studio' },
-    { id: 'page-image', label: 'Image Studio' },
+    // { id: 'page-image', label: 'Image Studio' },
   ];
   
   const toggleTheme = () => {

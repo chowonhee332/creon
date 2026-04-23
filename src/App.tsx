@@ -4,7 +4,7 @@ import { Header } from './components/Header';
 import { ExplorePage } from './components/pages/ExplorePage';
 import { IconStudioPage } from './components/pages/IconStudioPage';
 import { Studio3DPage } from './components/pages/Studio3DPage';
-import { ImageStudioPage } from './components/pages/ImageStudioPage';
+// import { ImageStudioPage } from './components/pages/ImageStudioPage';
 import { Toast } from './components/Toast';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Studio2DPage } from './features/studio/2d/components/Studio2DPage';
@@ -21,8 +21,8 @@ const AppPages: React.FC = () => {
       return <Studio2DPage />;
     case 'page-id-3d':
       return <Studio3DPage />;
-    case 'page-image':
-      return <ImageStudioPage />;
+    // case 'page-image':
+    //   return <ImageStudioPage />;
     case 'page-storage':
       return <StoragePage />;
     case 'page-admin':
