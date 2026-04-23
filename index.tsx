@@ -848,21 +848,16 @@ const imagePromptDisplay = $('#image-prompt-display') as HTMLTextAreaElement;
         existingStyleElement.remove();
       }
       
-      // Use all images once, each will fade in/out sequentially
-      // Skip 3rd image (index 2) if it exists
+      // Use all images once, skip 3rd image (index 2)
       const imagesToShow = assetsImages.filter((_: any, idx: number) => idx !== 2);
-      const imageDisplayDuration = 1; // seconds each image is visible (fully opaque)
-      const fadeDuration = 1; // seconds for fade in (1s) and fade out (1s) = 2s total
-      const totalCycleDuration = imagesToShow.length * (imageDisplayDuration + fadeDuration * 2);
       
-      // Remove scroll animation
-      container.style.animation = '';
+
       
-      // Create style element for dynamic animations
+      // Create style element for animations
       const styleElement = document.createElement('style');
       styleElement.id = 'dynamic-placeholder-animations';
       document.head.appendChild(styleElement);
-      
+
       // Load images and filter out failed ones
       const loadImage = (url: string): Promise<HTMLImageElement> => {
         return new Promise((resolve, reject) => {
@@ -872,10 +867,8 @@ const imagePromptDisplay = $('#image-prompt-display') as HTMLTextAreaElement;
           img.src = url;
         });
       };
-
-      const loadedImages: Array<{ img: HTMLImageElement; asset: { url: string; name: string }; index: number }> = [];
       
-      // Try to load all images and collect successful ones
+      const loadedImages: Array<{ img: HTMLImageElement; asset: { url: string; name: string }; index: number }> = [];
       await Promise.allSettled(
         imagesToShow.map(async (asset: { url: string; name: string }, index: number) => {
           try {
@@ -887,147 +880,46 @@ const imagePromptDisplay = $('#image-prompt-display') as HTMLTextAreaElement;
         })
       );
 
-      // Add text messages between images
-      const textMessages = [
-        'Design without design tools.',
-        'Create 2D, 3D, and motion with one prompt.',
-        'AI that builds your visuals for you.',
-        'Create more. Think less'
-      ];
-      
-      // Tighter timing: text appears during image fade out, next image appears during text fade out
-      const textDisplayDuration = 1; // seconds each text is visible
-      const textFadeDuration = 0.8; // seconds for text fade in/out (slightly faster)
-      
-      // Calculate timing: image fade out overlaps with text fade in, next image appears in middle of text fade out
-      // Pattern: image (fade in + display + fade out) → text (fade in during image fade out + display + fade out) → next image (fade in in middle of text fade out)
-      const singleImageDuration = imageDisplayDuration + fadeDuration * 2; // 1s display + 1s fade in + 1s fade out = 3s
-      const singleTextDuration = textDisplayDuration + textFadeDuration * 2; // 1s display + 0.8s fade in + 0.8s fade out = 2.6s
-      // Text starts during image fade out, so: image delay + (fade in + display) = when text starts
-      // Next image starts in middle of text fade out for smooth continuity
-      const overlap = fadeDuration; // 1s overlap (image fade out = text fade in)
-      
-      // Calculate delays for all images first to determine total cycle duration
-      const imageDelays: number[] = [];
-      for (let i = 0; i < loadedImages.length; i++) {
-        if (i === 0) {
-          imageDelays.push(0);
-        } else {
-          const prevImageDelay = imageDelays[i - 1];
-          const prevTextDelay = prevImageDelay + fadeDuration + imageDisplayDuration;
-          const prevTextFadeOutMiddle = prevTextDelay + textFadeDuration + textDisplayDuration + (textFadeDuration / 2);
-          imageDelays.push(prevTextFadeOutMiddle);
-        }
-      }
-      
-      // Calculate total cycle duration: last image's text fully fades out
-      const lastImageDelay = imageDelays[imageDelays.length - 1];
-      const lastTextDelay = lastImageDelay + fadeDuration + imageDisplayDuration;
-      const actualTotalCycleDuration = lastTextDelay + singleTextDuration;
+      if (loadedImages.length === 0) return;
 
-      loadedImages.forEach(({ img, asset, index }, loadedIndex) => {
-        img.alt = 'preview';
-        img.className = 'sample-preview-img';
-        
-        // Use pre-calculated delay
-        const imageDelay = imageDelays[loadedIndex];
-        // Text starts when image starts fading out (after fade in + display)
-        const textDelay = imageDelay + fadeDuration + imageDisplayDuration; // Start during image fade out
-        
-        // Image keyframes
-        const imageStartPercent = (imageDelay / actualTotalCycleDuration) * 100;
-        const imageFadeInEndPercent = ((imageDelay + fadeDuration) / actualTotalCycleDuration) * 100;
-        const imageFadeOutStartPercent = ((imageDelay + fadeDuration + imageDisplayDuration) / actualTotalCycleDuration) * 100;
-        const imageEndPercent = ((imageDelay + fadeDuration + imageDisplayDuration + fadeDuration) / actualTotalCycleDuration) * 100;
-        
-        // Text keyframes (overlaps with image fade out)
-        const textStartPercent = (textDelay / actualTotalCycleDuration) * 100;
-        const textFadeInEndPercent = ((textDelay + textFadeDuration) / actualTotalCycleDuration) * 100;
-        const textFadeOutStartPercent = ((textDelay + textFadeDuration + textDisplayDuration) / actualTotalCycleDuration) * 100;
-        const textEndPercent = ((textDelay + textFadeDuration + textDisplayDuration + textFadeDuration) / actualTotalCycleDuration) * 100;
-        
-        // Create unique animation for this image
-        const imageAnimationName = `fadeInOut-${index}`;
-        const textAnimationName = `fadeInOut-text-${index}`;
-        
-        // Add keyframes for image
-        const imageKeyframes = `
-          @keyframes ${imageAnimationName} {
-            0%, ${imageStartPercent}% {
-              opacity: 0;
-              transform: translate(-50%, -50%) scale(0.8);
-            }
-            ${imageFadeInEndPercent}%, ${imageFadeOutStartPercent}% {
-              opacity: 0.2;
-              transform: translate(-50%, -50%) scale(1);
-            }
-            ${imageEndPercent}%, 100% {
-              opacity: 0;
-              transform: translate(-50%, -50%) scale(0.8);
-            }
-          }
-        `;
-        
-        // Add keyframes for text
-        const textKeyframes = `
-          @keyframes ${textAnimationName} {
-            0%, ${textStartPercent}% {
-              opacity: 0;
-            }
-            ${textFadeInEndPercent}%, ${textFadeOutStartPercent}% {
-              opacity: 0.4;
-            }
-            ${textEndPercent}%, 100% {
-              opacity: 0;
-            }
-          }
-        `;
-        
-        styleElement.textContent += imageKeyframes + textKeyframes;
-        
-        img.style.cssText = `
+      const imageSlotTime = 2.5; // 2.5 seconds per image
+      const totalDuration = loadedImages.length * imageSlotTime;
+      const pFadeIn = (0.5 / totalDuration) * 100;
+      const pHold = (2.0 / totalDuration) * 100;
+      const pFadeOut = (2.5 / totalDuration) * 100;
+
+      styleElement.textContent = `
+        @keyframes centerFade3D {
+          0% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+          ${pFadeIn}% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+          ${pHold}% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+          ${pFadeOut}% { opacity: 0; transform: translate(-50%, -50%) scale(1.05); }
+          100% { opacity: 0; transform: translate(-50%, -50%) scale(1.05); }
+        }
+        .center-fade-item {
           position: absolute;
-          top: 50%;
           left: 50%;
-          transform: translate(-50%, -50%);
-          width: 480px;
-          height: 480px;
+          top: 50%;
+          width: 400px;
+          height: 400px;
           object-fit: contain;
-          border-radius: 16px;
-          filter: none;
           background: transparent;
           opacity: 0;
-          animation: ${imageAnimationName} ${actualTotalCycleDuration}s ease-in-out infinite;
-        `;
-        
-        // Add hover event listeners for opacity change
-        img.addEventListener('mouseenter', () => {
-          img.style.opacity = '1';
-        });
-        img.addEventListener('mouseleave', () => {
-          img.style.opacity = '';
-        });
-        
-        // Create text element
-        const textElement = document.createElement('div');
-        textElement.className = 'placeholder-text-message';
-        textElement.textContent = textMessages[loadedIndex % textMessages.length];
-        textElement.style.cssText = `
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 18px;
-          font-weight: 600;
-          color: var(--text-secondary);
-          opacity: 0;
-          animation: ${textAnimationName} ${actualTotalCycleDuration}s ease-in-out infinite;
-          white-space: nowrap;
-        `;
-        
-        container.appendChild(img);
-        container.appendChild(textElement);
+          animation: centerFade3D ${totalDuration}s infinite;
+        }
+      `;
+      
+      container.style.cssText = 'position: relative; width: 100%; height: 100%; overflow: hidden;';
+      
+      loadedImages.forEach(({ img }, index) => {
+        const clone = img.cloneNode() as HTMLImageElement;
+        clone.alt = 'preview';
+        clone.className = 'center-fade-item';
+        clone.style.animationDelay = `${index * imageSlotTime}s`;
+        container.appendChild(clone);
       });
+      
+
       
     } catch (error) {
       console.error('Failed to initialize placeholder images:', error);
@@ -1126,190 +1018,92 @@ const p2dGenerateMotionFromPreviewBtn = $('#p2d-generate-motion-from-preview-btn
       
       container.innerHTML = '';
       
+      // Use all images once
+      const imagesToShow = assetsImages;
+      
       // Clear existing dynamic animations
       const existingStyleElement = document.getElementById('dynamic-placeholder-animations-2d');
       if (existingStyleElement) {
         existingStyleElement.remove();
       }
       
-      // Use all images once, each will fade in/out sequentially
-      const imagesToShow = assetsImages;
-      const imageDisplayDuration = 1; // seconds each image is visible (fully opaque)
-      const fadeDuration = 1; // seconds for fade in (1s) and fade out (1s) = 2s total
-      const totalCycleDuration = imagesToShow.length * (imageDisplayDuration + fadeDuration * 2);
-      
-      // Remove scroll animation
-      container.style.animation = '';
-      
-      // Create style element for dynamic animations
-      const styleElement = document.createElement('style');
-      styleElement.id = 'dynamic-placeholder-animations-2d';
-      document.head.appendChild(styleElement);
-      
       // Load images and filter out failed ones
       const loadImage = (url: string): Promise<HTMLImageElement> => {
         return new Promise((resolve, reject) => {
           const img = new Image();
           img.onload = () => resolve(img);
-          img.onerror = () => reject(new Error(`Failed to load: ${url}`));
+          img.onerror = () => {
+            // macOS NFD fallback for Korean filenames
+            const nfdUrl = url.normalize('NFD');
+            if (nfdUrl !== url) {
+              const nfdImg = new Image();
+              nfdImg.onload = () => resolve(nfdImg);
+              nfdImg.onerror = () => reject(new Error(`Failed to load: ${url}`));
+              nfdImg.src = nfdUrl;
+            } else {
+              reject(new Error(`Failed to load: ${url}`));
+            }
+          };
           img.src = url;
         });
       };
 
       const loadedImages: Array<{ img: HTMLImageElement; asset: { url: string; name: string }; index: number }> = [];
-      
-      // Try to load all images and collect successful ones
       await Promise.allSettled(
         imagesToShow.map(async (asset: { url: string; name: string }, index: number) => {
           try {
             const img = await loadImage(asset.url);
             loadedImages.push({ img, asset, index });
           } catch (error) {
-            console.warn(`Skipping image that failed to load: ${asset.url}`);
+            console.warn(`Skipping image that failed to load: ${asset.url}`, error);
           }
         })
       );
+      console.log('2D Placeholder loaded images:', loadedImages.length);
 
-      // Add text messages between images
-      const textMessages = [
-        'Design without design tools.',
-        'Create 2D, 3D, and motion with one prompt.',
-        'AI that builds your visuals for you.',
-        'Create more. Think less'
-      ];
-      
-      // Tighter timing: text appears during image fade out, next image appears during text fade out
-      const textDisplayDuration = 1; // seconds each text is visible
-      const textFadeDuration = 0.8; // seconds for text fade in/out (slightly faster)
-      
-      // Calculate timing: image fade out overlaps with text fade in, next image appears in middle of text fade out
-      // Pattern: image (fade in + display + fade out) → text (fade in during image fade out + display + fade out) → next image (fade in in middle of text fade out)
-      const singleImageDuration = imageDisplayDuration + fadeDuration * 2; // 1s display + 1s fade in + 1s fade out = 3s
-      const singleTextDuration = textDisplayDuration + textFadeDuration * 2; // 1s display + 0.8s fade in + 0.8s fade out = 2.6s
-      // Text starts during image fade out, so: image delay + (fade in + display) = when text starts
-      // Next image starts in middle of text fade out for smooth continuity
-      const overlap = fadeDuration; // 1s overlap (image fade out = text fade in)
-      
-      // Calculate delays for all images first to determine total cycle duration
-      const imageDelays: number[] = [];
-      for (let i = 0; i < loadedImages.length; i++) {
-        if (i === 0) {
-          imageDelays.push(0);
-        } else {
-          const prevImageDelay = imageDelays[i - 1];
-          const prevTextDelay = prevImageDelay + fadeDuration + imageDisplayDuration;
-          const prevTextFadeOutMiddle = prevTextDelay + textFadeDuration + textDisplayDuration + (textFadeDuration / 2);
-          imageDelays.push(prevTextFadeOutMiddle);
+      if (loadedImages.length === 0) return;
+
+      const imageSlotTime = 2.5; // 2.5 seconds per image
+      const totalDuration = loadedImages.length * imageSlotTime;
+      const pFadeIn = (0.5 / totalDuration) * 100;
+      const pHold = (2.0 / totalDuration) * 100;
+      const pFadeOut = (2.5 / totalDuration) * 100;
+
+      // Create style element for animations
+      const styleElement = document.createElement('style');
+      styleElement.id = 'dynamic-placeholder-animations-2d';
+      document.head.appendChild(styleElement);
+
+      styleElement.textContent = `
+        @keyframes centerFade2D {
+          0% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+          ${pFadeIn}% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+          ${pHold}% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+          ${pFadeOut}% { opacity: 0; transform: translate(-50%, -50%) scale(1.05); }
+          100% { opacity: 0; transform: translate(-50%, -50%) scale(1.05); }
         }
-      }
-      
-      // Calculate total cycle duration: last image's text fully fades out
-      const lastImageDelay = imageDelays[imageDelays.length - 1];
-      const lastTextDelay = lastImageDelay + fadeDuration + imageDisplayDuration;
-      const actualTotalCycleDuration = lastTextDelay + singleTextDuration;
-
-      loadedImages.forEach(({ img, asset, index }, loadedIndex) => {
-        img.alt = 'preview';
-        img.className = 'sample-preview-img';
-        
-        // Use pre-calculated delay
-        const imageDelay = imageDelays[loadedIndex];
-        // Text starts when image starts fading out (after fade in + display)
-        const textDelay = imageDelay + fadeDuration + imageDisplayDuration; // Start during image fade out
-        
-        // Image keyframes
-        const imageStartPercent = (imageDelay / actualTotalCycleDuration) * 100;
-        const imageFadeInEndPercent = ((imageDelay + fadeDuration) / actualTotalCycleDuration) * 100;
-        const imageFadeOutStartPercent = ((imageDelay + fadeDuration + imageDisplayDuration) / actualTotalCycleDuration) * 100;
-        const imageEndPercent = ((imageDelay + fadeDuration + imageDisplayDuration + fadeDuration) / actualTotalCycleDuration) * 100;
-        
-        // Text keyframes (overlaps with image fade out)
-        const textStartPercent = (textDelay / actualTotalCycleDuration) * 100;
-        const textFadeInEndPercent = ((textDelay + textFadeDuration) / actualTotalCycleDuration) * 100;
-        const textFadeOutStartPercent = ((textDelay + textFadeDuration + textDisplayDuration) / actualTotalCycleDuration) * 100;
-        const textEndPercent = ((textDelay + textFadeDuration + textDisplayDuration + textFadeDuration) / actualTotalCycleDuration) * 100;
-        
-        // Create unique animation for this image
-        const imageAnimationName = `fadeInOut-2d-${index}`;
-        const textAnimationName = `fadeInOut-text-2d-${index}`;
-        
-        // Add keyframes for image
-        const imageKeyframes = `
-          @keyframes ${imageAnimationName} {
-            0%, ${imageStartPercent}% {
-              opacity: 0;
-              transform: translate(-50%, -50%) scale(0.8);
-            }
-            ${imageFadeInEndPercent}%, ${imageFadeOutStartPercent}% {
-              opacity: 0.2;
-              transform: translate(-50%, -50%) scale(1);
-            }
-            ${imageEndPercent}%, 100% {
-              opacity: 0;
-              transform: translate(-50%, -50%) scale(0.8);
-            }
-          }
-        `;
-        
-        // Add keyframes for text
-        const textKeyframes = `
-          @keyframes ${textAnimationName} {
-            0%, ${textStartPercent}% {
-              opacity: 0;
-            }
-            ${textFadeInEndPercent}%, ${textFadeOutStartPercent}% {
-              opacity: 0.4;
-            }
-            ${textEndPercent}%, 100% {
-              opacity: 0;
-            }
-          }
-        `;
-        
-        styleElement.textContent += imageKeyframes + textKeyframes;
-        
-        img.style.cssText = `
+        .center-fade-item-2d {
           position: absolute;
-          top: 50%;
           left: 50%;
-          transform: translate(-50%, -50%);
-          width: 320px;
-          height: 320px;
-          object-fit: contain;
+          top: 50%;
+          width: 240px;
+          height: 240px;
           border-radius: 16px;
-          filter: none;
+          object-fit: contain;
           background: transparent;
           opacity: 0;
-          animation: ${imageAnimationName} ${actualTotalCycleDuration}s ease-in-out infinite;
-        `;
-        
-        // Add hover event listeners for opacity change
-        img.addEventListener('mouseenter', () => {
-          img.style.opacity = '1';
-        });
-        img.addEventListener('mouseleave', () => {
-          img.style.opacity = '';
-        });
-        
-        // Create text element
-        const textElement = document.createElement('div');
-        textElement.className = 'placeholder-text-message';
-        textElement.textContent = textMessages[loadedIndex % textMessages.length];
-        textElement.style.cssText = `
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 18px;
-          font-weight: 600;
-          color: var(--text-secondary);
-          opacity: 0;
-          animation: ${textAnimationName} ${actualTotalCycleDuration}s ease-in-out infinite;
-          white-space: nowrap;
-        `;
-        
-        container.appendChild(img);
-        container.appendChild(textElement);
+          animation: centerFade2D ${totalDuration}s infinite;
+        }
+      `;
+      
+      container.style.cssText = 'position: relative; width: 100%; height: 100%; overflow: hidden;';
+      
+      loadedImages.forEach(({ img }, index) => {
+        const clone = img.cloneNode() as HTMLImageElement;
+        clone.alt = 'preview';
+        clone.className = 'center-fade-item-2d';
+        clone.style.animationDelay = `${index * imageSlotTime}s`;
+        container.appendChild(clone);
       });
       
     } catch (error) {
@@ -1357,18 +1151,6 @@ const p2dGenerateMotionFromPreviewBtn = $('#p2d-generate-motion-from-preview-btn
         existingStyleElement.remove();
       }
       
-      const imageDisplayDuration = 1; // seconds each image is visible (fully opaque)
-      const fadeDuration = 1; // seconds for fade in (1s) and fade out (1s) = 2s total
-      const totalCycleDuration = imagesToShow.length * (imageDisplayDuration + fadeDuration * 2);
-      
-      // Remove scroll animation
-      container.style.animation = '';
-      
-      // Create style element for dynamic animations
-      const styleElement = document.createElement('style');
-      styleElement.id = 'dynamic-placeholder-animations-image';
-      document.head.appendChild(styleElement);
-      
       // Load images and filter out failed ones
       const loadImage = (url: string): Promise<HTMLImageElement> => {
         return new Promise((resolve, reject) => {
@@ -1378,10 +1160,8 @@ const p2dGenerateMotionFromPreviewBtn = $('#p2d-generate-motion-from-preview-btn
           img.src = url;
         });
       };
-
-      const loadedImages: Array<{ img: HTMLImageElement; asset: { url: string; name: string }; index: number }> = [];
       
-      // Try to load all images and collect successful ones
+      const loadedImages: Array<{ img: HTMLImageElement; asset: { url: string; name: string }; index: number }> = [];
       await Promise.allSettled(
         imagesToShow.map(async (asset: { url: string; name: string }, index: number) => {
           try {
@@ -1393,128 +1173,49 @@ const p2dGenerateMotionFromPreviewBtn = $('#p2d-generate-motion-from-preview-btn
         })
       );
 
-      // Add text messages between images
-      const textMessages = [
-        'Design without design tools.',
-        'Create 2D, 3D, and motion with one prompt.',
-        'AI that builds your visuals for you.',
-        'Create more. Think less'
-      ];
-      
-      // Tighter timing: text appears during image fade out, next image appears during text fade out
-      const textDisplayDuration = 1; // seconds each text is visible
-      const textFadeDuration = 0.8; // seconds for text fade in/out (slightly faster)
-      
-      // Calculate timing: image fade out overlaps with text fade in, text fade out overlaps with next image fade in
-      const singleImageDuration = imageDisplayDuration + fadeDuration * 2; // 1s display + 1s fade in + 1s fade out = 3s
-      const singleTextDuration = textDisplayDuration + textFadeDuration * 2; // 1s display + 0.8s fade in + 0.8s fade out = 2.6s
-      const overlap = fadeDuration; // 1s overlap (image fade out = text fade in)
-      const singlePairDuration = singleImageDuration + singleTextDuration - overlap; // 3 + 2.6 - 1 = 4.6s
-      const actualTotalCycleDuration = loadedImages.length * singlePairDuration;
+      if (loadedImages.length === 0) return;
 
-      loadedImages.forEach(({ img, asset, index }, loadedIndex) => {
-        img.alt = 'preview';
-        img.className = 'sample-preview-img';
-        
-        // Calculate animation delay for sequential display with overlap
-        const pairIndex = loadedIndex;
-        const imageDelay = pairIndex * singlePairDuration;
-        // Text starts when image starts fading out (after fade in + display)
-        const textDelay = imageDelay + fadeDuration + imageDisplayDuration; // Start during image fade out
-        
-        // Image keyframes
-        const imageStartPercent = (imageDelay / actualTotalCycleDuration) * 100;
-        const imageFadeInEndPercent = ((imageDelay + fadeDuration) / actualTotalCycleDuration) * 100;
-        const imageFadeOutStartPercent = ((imageDelay + fadeDuration + imageDisplayDuration) / actualTotalCycleDuration) * 100;
-        const imageEndPercent = ((imageDelay + fadeDuration + imageDisplayDuration + fadeDuration) / actualTotalCycleDuration) * 100;
-        
-        // Text keyframes (overlaps with image fade out)
-        const textStartPercent = (textDelay / actualTotalCycleDuration) * 100;
-        const textFadeInEndPercent = ((textDelay + textFadeDuration) / actualTotalCycleDuration) * 100;
-        const textFadeOutStartPercent = ((textDelay + textFadeDuration + textDisplayDuration) / actualTotalCycleDuration) * 100;
-        const textEndPercent = ((textDelay + textFadeDuration + textDisplayDuration + textFadeDuration) / actualTotalCycleDuration) * 100;
-        
-        // Create unique animation for this image
-        const imageAnimationName = `fadeInOut-image-${index}`;
-        const textAnimationName = `fadeInOut-text-image-${index}`;
-        
-        // Add keyframes for image
-        const imageKeyframes = `
-          @keyframes ${imageAnimationName} {
-            0%, ${imageStartPercent}% {
-              opacity: 0;
-              transform: translate(-50%, -50%) scale(0.8);
-            }
-            ${imageFadeInEndPercent}%, ${imageFadeOutStartPercent}% {
-              opacity: 0.2;
-              transform: translate(-50%, -50%) scale(1);
-            }
-            ${imageEndPercent}%, 100% {
-              opacity: 0;
-              transform: translate(-50%, -50%) scale(0.8);
-            }
-          }
-        `;
-        
-        // Add keyframes for text
-        const textKeyframes = `
-          @keyframes ${textAnimationName} {
-            0%, ${textStartPercent}% {
-              opacity: 0;
-            }
-            ${textFadeInEndPercent}%, ${textFadeOutStartPercent}% {
-              opacity: 0.4;
-            }
-            ${textEndPercent}%, 100% {
-              opacity: 0;
-            }
-          }
-        `;
-        
-        styleElement.textContent += imageKeyframes + textKeyframes;
-        
-        img.style.cssText = `
+      const imageSlotTime = 2.5; // 2.5 seconds per image
+      const totalDuration = loadedImages.length * imageSlotTime;
+      const pFadeIn = (0.5 / totalDuration) * 100;
+      const pHold = (2.0 / totalDuration) * 100;
+      const pFadeOut = (2.5 / totalDuration) * 100;
+
+      // Create style element for animations
+      const styleElement = document.createElement('style');
+      styleElement.id = 'dynamic-placeholder-animations-image';
+      document.head.appendChild(styleElement);
+
+      styleElement.textContent = `
+        @keyframes centerFadeImage {
+          0% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+          ${pFadeIn}% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+          ${pHold}% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+          ${pFadeOut}% { opacity: 0; transform: translate(-50%, -50%) scale(1.05); }
+          100% { opacity: 0; transform: translate(-50%, -50%) scale(1.05); }
+        }
+        .center-fade-item-image {
           position: absolute;
-          top: 50%;
           left: 50%;
-          transform: translate(-50%, -50%);
-          width: 320px;
-          height: 320px;
-          object-fit: contain;
+          top: 50%;
+          width: 240px;
+          height: 240px;
           border-radius: 16px;
-          filter: none;
+          object-fit: contain;
           background: transparent;
           opacity: 0;
-          animation: ${imageAnimationName} ${actualTotalCycleDuration}s ease-in-out infinite;
-        `;
-        
-        // Add hover event listeners for opacity change
-        img.addEventListener('mouseenter', () => {
-          img.style.opacity = '1';
-        });
-        img.addEventListener('mouseleave', () => {
-          img.style.opacity = '';
-        });
-        
-        // Create text element
-        const textElement = document.createElement('div');
-        textElement.className = 'placeholder-text-message';
-        textElement.textContent = textMessages[loadedIndex % textMessages.length];
-        textElement.style.cssText = `
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 18px;
-          font-weight: 600;
-          color: var(--text-secondary);
-          opacity: 0;
-          animation: ${textAnimationName} ${actualTotalCycleDuration}s ease-in-out infinite;
-          white-space: nowrap;
-        `;
-        
-        container.appendChild(img);
-        container.appendChild(textElement);
+          animation: centerFadeImage ${totalDuration}s infinite;
+        }
+      `;
+      
+      container.style.cssText = 'position: relative; width: 100%; height: 100%; overflow: hidden;';
+      
+      loadedImages.forEach(({ img }, index) => {
+        const clone = img.cloneNode() as HTMLImageElement;
+        clone.alt = 'preview';
+        clone.className = 'center-fade-item-image';
+        clone.style.animationDelay = `${index * imageSlotTime}s`;
+        container.appendChild(clone);
       });
       
     } catch (error) {

@@ -31,7 +31,6 @@ export const Studio3DPlaceholder: React.FC<Studio3DPlaceholderProps> = ({
     height: '192px',
     objectFit: 'cover',
     borderRadius: '16px',
-    filter: 'grayscale(100%)',
     transition: 'all 0.3s ease',
   };
 
@@ -65,10 +64,7 @@ export const Studio3DPlaceholder: React.FC<Studio3DPlaceholderProps> = ({
             src={src}
             alt="preview"
             style={imageStyle}
-            whileHover={{ 
-              filter: 'grayscale(0%)',
-              scale: 1.05 
-            }}
+
             onError={(e) => {
               // Fallback if image doesn't exist - use placeholder
               const target = e.target as HTMLImageElement;

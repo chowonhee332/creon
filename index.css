@@ -5328,9 +5328,6 @@ canvas[style*="position: fixed"] {
   /* Animation is set dynamically in JavaScript */
 }
 
-.sample-preview-img:hover {
-  opacity: 1 !important;
-}
 
 /* Motion Category Preview Animations */
 @keyframes preview-jump {
