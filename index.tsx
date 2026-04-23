@@ -10274,32 +10274,32 @@ regenerate3DBtn?.addEventListener('click', () => {
   const setupDynamicPlaceholders = () => {
     // 2D Studio placeholders
     const p2dPlaceholders = [
-      'ex. 나무에 매달린 원숭이',
-      'ex. 하늘을 나는 새',
-      'ex. 바다에서 헤엄치는 물고기',
-      'ex. 꽃밭에서 뛰어노는 강아지',
-      'ex. 책을 읽고 있는 고양이',
-      'ex. 자전거를 타는 펭귄'
+      'ex. 마법 지팡이를 휘두르는 부엉이',
+      'ex. 스케이트보드를 타는 고양이',
+      'ex. 커피를 마시며 코딩하는 토끼',
+      'ex. 우주선을 조종하는 펭귄',
+      'ex. 책상에서 엎드려 자는 곰',
+      'ex. 음악을 들으며 산책하는 강아지'
     ];
     
     // 3D Studio placeholders
     const p3dPlaceholders = [
-      'ex. 당근을 손에 들고있는 토끼',
-      'ex. 별을 잡으려는 곰',
-      'ex. 우주선을 조종하는 로봇',
-      'ex. 마법 지팡이를 든 마법사',
-      'ex. 트로피를 들어올린 선수',
-      'ex. 케이크를 만드는 요리사'
+      'ex. 전기 기타를 연주하는 사이버펑크 고양이, 로우폴리 스타일',
+      'ex. 마법 물약을 끓이고 있는 늙은 마법사, 사실적인 질감',
+      'ex. 당근 로켓을 타고 날아가는 토끼, 픽사 애니메이션 스타일',
+      'ex. 검을 들고 훈련하는 기사, 화려한 디테일',
+      'ex. 오토바이를 타고 질주하는 로봇, 시네마틱 라이팅',
+      'ex. 카메라를 들고 사진을 찍는 레트로 스타일의 사슴'
     ];
     
     // Image Studio placeholders
     const imagePlaceholders = [
-      'ex. 파스타 먹고 있는 캐릭터',
-      'ex. 커피를 마시는 사람',
-      'ex. 그림을 그리는 아티스트',
-      'ex. 노트북으로 작업하는 학생',
-      'ex. 운동하는 사람',
-      'ex. 음악을 듣는 사람'
+      'ex. 마법의 숲에서 길을 잃은 작은 요정, 몽환적인 조명',
+      'ex. 네온사인 아래를 걷는 사이버펑크 전사',
+      'ex. 따뜻한 햇살이 비치는 아늑한 오두막 주방',
+      'ex. 구름 위를 헤엄치는 거대한 고래',
+      'ex. 수채화 스타일의 만개한 벚꽃 나무',
+      'ex. 우주 정거장에서 바라본 지구의 모습'
     ];
     
     const setupTypingPlaceholder = (inputId: string, placeholders: string[]) => {
@@ -10496,6 +10496,32 @@ regenerate3DBtn?.addEventListener('click', () => {
     setupTypingPlaceholder('#image-prompt-subject-input', p3dPlaceholders);
     setupTypingPlaceholder('#prompt-input-3d', p3dPlaceholders);
     setupTypingPlaceholder('#image-prompt-subject-input-image', imagePlaceholders);
+
+    // 랜덤 프롬프트 버튼 헬퍼 함수
+    const attachRandomPromptLogic = (btnId: string, inputId: string, placeholders: string[]) => {
+      const btn = document.getElementById(btnId);
+      const input = $(inputId) as HTMLInputElement;
+      if (btn && input) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const cleanPlaceholders = placeholders.map(p => p.replace(/^ex\.\s*/, ''));
+          let randomText = cleanPlaceholders[Math.floor(Math.random() * cleanPlaceholders.length)];
+          while (randomText === input.value && cleanPlaceholders.length > 1) {
+            randomText = cleanPlaceholders[Math.floor(Math.random() * cleanPlaceholders.length)];
+          }
+          input.value = randomText;
+          // Trigger input event to enable Generate button
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.focus();
+        });
+      }
+    };
+    
+    attachRandomPromptLogic('random-prompt-btn-3d', '#prompt-input-3d', p3dPlaceholders);
+    attachRandomPromptLogic('random-prompt-btn-2d', '#p2d-image-prompt-subject-input', p2dPlaceholders);
+    attachRandomPromptLogic('random-prompt-btn-image-1', '#image-prompt-subject-input', p3dPlaceholders);
+    attachRandomPromptLogic('random-prompt-btn-image-2', '#image-prompt-subject-input-image', imagePlaceholders);
   };
   
   // Initialize dynamic placeholders
@@ -12664,22 +12690,22 @@ STRICT RULES:
     const getHomePlaceholderTexts = () => {
       // 2D Studio (Icon Studio) placeholders - remove "ex. " prefix
       const p2dPlaceholders = [
-        '나무에 매달린 원숭이',
-        '하늘을 나는 새',
-        '바다에서 헤엄치는 물고기',
-        '꽃밭에서 뛰어노는 강아지',
-        '책을 읽고 있는 고양이',
-        '자전거를 타는 펭귄'
+        '마법 지팡이를 휘두르는 부엉이',
+        '스케이트보드를 타는 고양이',
+        '커피를 마시며 코딩하는 토끼',
+        '우주선을 조종하는 펭귄',
+        '책상에서 엎드려 자는 곰',
+        '음악을 들으며 산책하는 강아지'
       ];
       
       // 3D Studio placeholders - remove "ex. " prefix
       const p3dPlaceholders = [
-        '당근을 손에 들고있는 토끼',
-        '별을 잡으려는 곰',
-        '우주선을 조종하는 로봇',
-        '마법 지팡이를 든 마법사',
-        '트로피를 들어올린 선수',
-        '케이크를 만드는 요리사'
+        '전기 기타를 연주하는 사이버펑크 고양이, 로우폴리 스타일',
+        '마법 물약을 끓이고 있는 늙은 마법사, 사실적인 질감',
+        '당근 로켓을 타고 날아가는 토끼, 픽사 애니메이션 스타일',
+        '검을 들고 훈련하는 기사, 화려한 디테일',
+        '오토바이를 타고 질주하는 로봇, 시네마틱 라이팅',
+        '카메라를 들고 사진을 찍는 레트로 스타일의 사슴'
       ];
       
       // Check which studio is active based on currentPage

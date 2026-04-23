@@ -591,11 +591,16 @@
                 </div>
                 <div class="tab-footer">
                   <div class="settings-actions">
-                    <button id="convert-to-3d-btn" class="primary-btn" disabled style="opacity: 0.5; cursor: not-allowed;">
-                      <span class="material-symbols-outlined">auto_awesome</span>
-                      <span class="btn-text">Generate</span>
-                      <div class="btn-loader"></div>
-                    </button>
+                    <div style="display: flex; gap: 8px; width: 100%;">
+                      <button id="random-prompt-btn-3d" class="icon-button" style="width: 44px; height: 44px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.2s;" title="랜덤 프롬프트">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">shuffle</span>
+                      </button>
+                      <button id="convert-to-3d-btn" class="primary-btn" disabled style="opacity: 0.5; cursor: not-allowed; flex: 1;">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        <span class="btn-text">Generate</span>
+                        <div class="btn-loader"></div>
+                      </button>
+                    </div>
                     <a href="#" id="download-3d-btn" class="secondary-btn hidden" download="icon_3d.png">
                       <span class="material-symbols-outlined">download</span> Download
                     </a>
@@ -660,11 +665,16 @@
                         <input type="text" id="p2d-image-prompt-subject-input" placeholder="ex. 나무에 매달린 원숭이">
                         
                         <!-- Generate Button -->
-                        <button id="p2d-image-generate-btn" class="primary-btn" disabled style="opacity: 0.5; cursor: not-allowed;">
-                            <span class="material-symbols-outlined">auto_awesome</span>
-                            <span class="btn-text">Generate</span>
-                            <div class="btn-loader"></div>
-                        </button>
+                        <div style="display: flex; gap: 8px; width: 100%;">
+                            <button id="random-prompt-btn-2d" class="icon-button" style="width: 44px; height: 44px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.2s;" title="랜덤 프롬프트">
+                                <span class="material-symbols-outlined" style="font-size: 20px;">shuffle</span>
+                            </button>
+                            <button id="p2d-image-generate-btn" class="primary-btn" disabled style="opacity: 0.5; cursor: not-allowed; flex: 1;">
+                                <span class="material-symbols-outlined">auto_awesome</span>
+                                <span class="btn-text">Generate</span>
+                                <div class="btn-loader"></div>
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- 2. Prompt Detail Card -->
@@ -1081,11 +1091,16 @@
 
 
                         <!-- Generate Button -->
-                        <button id="image-generate-btn" class="primary-btn" disabled style="opacity: 0.5; cursor: not-allowed;">
-                            <span class="material-symbols-outlined">auto_awesome</span>
-                            <span class="btn-text">Generate</span>
-                            <div class="btn-loader"></div>
-                        </button>
+                        <div style="display: flex; gap: 8px; width: 100%;">
+                            <button id="random-prompt-btn-image-1" class="icon-button" style="width: 44px; height: 44px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.2s;" title="랜덤 프롬프트">
+                                <span class="material-symbols-outlined" style="font-size: 20px;">shuffle</span>
+                            </button>
+                            <button id="image-generate-btn" class="primary-btn" disabled style="opacity: 0.5; cursor: not-allowed; flex: 1;">
+                                <span class="material-symbols-outlined">auto_awesome</span>
+                                <span class="btn-text">Generate</span>
+                                <div class="btn-loader"></div>
+                            </button>
+                        </div>
                         
                     </div>
                     <!-- Prompt Detail & Options Card -->
@@ -1480,11 +1495,16 @@
                         <input type="text" id="image-prompt-subject-input-image" placeholder="ex. 파스타 먹고 있는 캐릭터" style="width: 100%;">
 
                         <!-- Generate Button -->
-                        <button id="image-generate-btn-image" class="primary-btn" disabled style="opacity: 0.5; cursor: not-allowed;">
-                            <span class="material-symbols-outlined">auto_awesome</span>
-                            <span class="btn-text">Generate</span>
-                            <div class="btn-loader"></div>
-                        </button>
+                        <div style="display: flex; gap: 8px; width: 100%;">
+                            <button id="random-prompt-btn-image-2" class="icon-button" style="width: 44px; height: 44px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.2s;" title="랜덤 프롬프트">
+                                <span class="material-symbols-outlined" style="font-size: 20px;">shuffle</span>
+                            </button>
+                            <button id="image-generate-btn-image" class="primary-btn" disabled style="opacity: 0.5; cursor: not-allowed; flex: 1;">
+                                <span class="material-symbols-outlined">auto_awesome</span>
+                                <span class="btn-text">Generate</span>
+                                <div class="btn-loader"></div>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="control-card">

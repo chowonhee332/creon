@@ -462,7 +462,7 @@ export default function AdminPage() {
 const styles: Record<string, React.CSSProperties> = {
   container: { padding: '24px', maxWidth: 1200, margin: '0 auto', width: '100%' },
   header: { marginBottom: 24 },
-  title: { margin: 0, fontSize: 20, fontWeight: 600 },
+  title: { margin: 0, fontSize: 22, fontWeight: 700 },
   tabs: { display: 'flex', gap: 0, marginBottom: 24, borderBottom: '1px solid var(--border-color)' },
   tab: { padding: '10px 20px', fontSize: 14, fontWeight: 400, background: 'none', border: 'none', borderBottom: '2px solid transparent', color: 'var(--text-secondary)', cursor: 'pointer' },
   tabActive: { fontWeight: 600, borderBottom: '2px solid var(--accent-color, #2962FF)', color: 'var(--accent-color, #2962FF)' },
