@@ -13,10 +13,12 @@
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
     "@google/genai": "latest",
+    "@huggingface/transformers": "^4.2.0",
     "@imgly/background-removal": "^1.7.0",
     "@supabase/supabase-js": "^2.101.1",
     "imagetracerjs": "^1.2.6",
-    "reshaped": "^3.8.5"
+    "reshaped": "^3.8.5",
+    "vtracer-wasm": "^0.1.0"
   },
   "devDependencies": {
     "@google/generative-ai": "^0.24.1",

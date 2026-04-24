@@ -103,7 +103,6 @@ export const generateImage = async (
     const validImageParts = imageParts.filter(part => part !== null) as any[];
     parts.push(...validImageParts);
 
-    console.log('Calling AI API with parts:', parts);
     const ai = getAIInstance(); // 매번 최신 API Key로 인스턴스 생성
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
@@ -113,7 +112,6 @@ export const generateImage = async (
       },
     });
 
-    console.log('API response received:', response);
     
     const candidate = response.candidates?.[0];
     const content = candidate?.content;
@@ -122,7 +120,6 @@ export const generateImage = async (
     const inlineData = firstPart?.inlineData;
 
     if (inlineData && inlineData.data && inlineData.mimeType) {
-      console.log('Image data extracted successfully, mimeType:', inlineData.mimeType);
       return { data: inlineData.data, mimeType: inlineData.mimeType };
     } else {
       console.error('Invalid API response structure');

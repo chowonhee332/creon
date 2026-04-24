@@ -7,10 +7,8 @@ export async function uploadGeneration(
   originalName: string,
   generationId?: string
 ) {
-  console.log('[upload] uploadGeneration 시작');
   const { data: { session } } = await supabase.auth.getSession();
   const user = session?.user;
-  console.log('[upload] user:', user?.id ?? 'null');
   if (!user) throw new Error('로그인이 필요합니다.');
 
   // base64 → Blob 변환
@@ -25,15 +23,12 @@ export async function uploadGeneration(
   const ext = fileType.split('/')[1]?.split(';')[0] || 'bin';
   const path = `${user.id}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
 
-  console.log('[upload] storage 업로드 시작 path:', path, 'blob size:', blob.size);
   const { error: uploadError } = await supabase.storage
     .from('generations')
     .upload(path, blob, { contentType: fileType, upsert: false });
 
-  console.log('[upload] storage 업로드 결과 error:', uploadError);
   if (uploadError) throw uploadError;
 
-  console.log('[upload] DB insert 시작');
   const { error: dbError } = await supabase.from('storage_items').insert({
     user_id: user.id,
     generation_id: generationId ?? null,
@@ -43,26 +38,21 @@ export async function uploadGeneration(
     original_name: originalName,
   });
 
-  console.log('[upload] DB insert 결과 error:', dbError);
   if (dbError) throw dbError;
   return path;
 }
 
 // 사용자 생성물 목록 조회
 export async function getMyStorageItems() {
-  console.log('[storage] getMyStorageItems 시작');
   const { data: { session } } = await supabase.auth.getSession();
   const user = session?.user;
-  console.log('[storage] session user:', user?.id ?? 'null');
   if (!user) return [];
 
-  console.log('[storage] storage_items 쿼리 시작');
   const { data, error } = await supabase
     .from('storage_items')
     .select('*')
     .order('created_at', { ascending: false });
 
-  console.log('[storage] 쿼리 완료 data:', data?.length, 'error:', error);
   if (error) throw error;
   return data ?? [];
 }

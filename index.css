@@ -1186,6 +1186,21 @@ a.secondary-btn[disabled] {
   opacity: 0.7;
 }
 
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.multiview-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(0,0,0,0.1);
+  border-top-color: var(--color-ink-text-low, #888);
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: rotation 0.8s linear infinite;
+}
+
 .primary-btn.loading > .btn-text,
 .primary-btn.loading > .btn-icon,
 .secondary-btn.loading > .btn-text,

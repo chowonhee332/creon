@@ -94,7 +94,6 @@ export const ExplorePage: React.FC = () => {
           const playPromise = video.play();
           if (playPromise !== undefined) {
             playPromise.catch((error) => {
-              console.log('Autoplay prevented for video:', video.src, error);
             });
           }
         } else {

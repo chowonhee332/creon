@@ -113,7 +113,7 @@ export default defineConfig(({ mode }) => {
         }
       },
       optimizeDeps: {
-        exclude: ['@imgly/background-removal']
+        exclude: ['vtracer-wasm', '@huggingface/transformers']
       },
       assetsInclude: ['**/*.wasm'],
       build: {
@@ -123,7 +123,7 @@ export default defineConfig(({ mode }) => {
             manualChunks: {
               'vendor-genai': ['@google/genai'],
               'vendor-ffmpeg': ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
-              'vendor-imgly': ['@imgly/background-removal'],
+              'vendor-transformers': ['@huggingface/transformers'],
               'vendor-reshaped': ['reshaped']
             }
           }

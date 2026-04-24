@@ -1,22 +1,25 @@
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import StoragePage from './pages/StoragePage';
 import AdminPage from './pages/AdminPage';
 
-let storageMounted = false;
-let adminMounted = false;
+let storageRoot: ReactDOM.Root | null = null;
+let adminRoot: ReactDOM.Root | null = null;
 
 export function mountStoragePage() {
-  if (storageMounted) return;
-  const el = document.getElementById('storage-page-root');
-  if (!el) return;
-  ReactDOM.createRoot(el).render(<StoragePage />);
-  storageMounted = true;
+  const container = document.getElementById('storage-page-root');
+  if (!container) return;
+  if (!storageRoot) {
+    storageRoot = ReactDOM.createRoot(container);
+  }
+  storageRoot.render(<StoragePage />);
 }
 
 export function mountAdminPage() {
-  if (adminMounted) return;
-  const el = document.getElementById('admin-page-root');
-  if (!el) return;
-  ReactDOM.createRoot(el).render(<AdminPage />);
-  adminMounted = true;
+  const container = document.getElementById('admin-page-root');
+  if (!container) return;
+  if (!adminRoot) {
+    adminRoot = ReactDOM.createRoot(container);
+  }
+  adminRoot.render(<AdminPage />);
 }

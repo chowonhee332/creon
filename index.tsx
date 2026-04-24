@@ -6,7 +6,6 @@
 
 import { GoogleGenAI, GenerateContentResponse, Modality, Chat, Type } from '@google/genai';
 import {marked} from 'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js';
-import ImageTracer from 'imagetracerjs';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
 import './src/lib/authBridge';
@@ -97,6 +96,7 @@ let motionLastFrameImage2d: { file: File; dataUrl: string; } | null = null;
   let motionFirstFrameImageStudio: { file: File; dataUrl: string; } | null = null;
   let motionLastFrameImageStudio: { file: File; dataUrl: string; } | null = null;
   let currentPage = 'page-usages';
+  let isGenerating = false;
   let isGeneratingVideo = false;
   let currentVideoGenerationOperation: any = null;
   let lastFocusedElement: HTMLElement | null = null;
@@ -287,7 +287,7 @@ const reorderExploreMediaByCategory = (items: any[]): any[] => {
     "subject": "{ICON_SUBJECT}",
     // "pose_instruction" removed - Action input no longer used
     "guidance": {
-      "aspect_ratio": "1:1",
+      "aspect_ratio": "16:9",
       "instruction_strength": "strict",
       "priority_order": [
         "subject",
@@ -321,7 +321,7 @@ const reorderExploreMediaByCategory = (items: any[]): any[] => {
     },
     "colors": {
       "palette_name": "Creon Blue System",
-      "dominant_blue": "#2E6BFF",
+      "dominant_blue": "#2962FF",
       "secondary_blue": "#4FC3F7",
       "neutral_white": "#FFFFFF",
       "warm_accent": "#FFD45A",
@@ -351,7 +351,7 @@ const reorderExploreMediaByCategory = (items: any[]): any[] => {
       "elements": "single hero subject floating; only props essential to subject",
       "depth": "distinct layering, slight elevation",
       "density": "minimal, focused center",
-      "framing": "Subject fully visible and centered with clean margins"
+      "framing": "ZOOMED OUT. Subject must be small relative to canvas. 30% wide empty padding on all sides."
     },
     "camera": {
       "type": "isometric",
@@ -362,7 +362,7 @@ const reorderExploreMediaByCategory = (items: any[]): any[] => {
       "focus": "global sharp",
       "motion": "static"
     },
-    "canvas": { "ratio": "1:1", "safe_margins": true },
+    "canvas": { "ratio": "16:9", "safe_margins": true },
     "background_guidance": "Keep background white, no gradients or props"
   }, null, 2);
   const DEFAULT_3D_STYLE_PROMPT_TEMPLATE = JSON.stringify({
@@ -384,9 +384,9 @@ const reorderExploreMediaByCategory = (items: any[]): any[] => {
     },
     "output": {
       "format": "png",
-      "size": "1024x576",
-      "width": 1024,
-      "height": 576,
+      "size": "1920x1080",
+      "width": 1920,
+      "height": 1080,
       "background": "#FFFFFF",
       "alpha": true,
       "safety_settings": {
@@ -397,9 +397,9 @@ const reorderExploreMediaByCategory = (items: any[]): any[] => {
     "render": {
       "engine": "flash-3d",
       "quality": "ultra-high",
-      "resolution": 1024,
-      "width": 1024,
-      "height": 576,
+      "resolution": 1920,
+      "width": 1920,
+      "height": 1080,
       "sampling": "deterministic",
       "postprocess": "clean",
       "separation": "by color/lighting/depth only"
@@ -428,7 +428,7 @@ const reorderExploreMediaByCategory = (items: any[]): any[] => {
     },
     "colors": {
       "palette_name": "Creon Blue System",
-      "dominant_blue": "#2E6BFF",
+      "dominant_blue": "#2962FF",
       "secondary_blue": "#4FC3F7",
       "neutral_white": "#FFFFFF",
       "warm_accent": "#FFD45A",
@@ -444,7 +444,7 @@ const reorderExploreMediaByCategory = (items: any[]): any[] => {
     "composition": {
       "elements": "single hero subject floating; only props essential to subject",
       "density": "minimal, generous negative space",
-      "framing": "subject centered with equal top/bottom margins, fully contained",
+      "framing": "ZOOMED OUT. Subject must be small relative to canvas. 30% wide empty padding on all sides.",
       "depth": "3-layer depth stack with gentle parallax"
     },
     "background": {
@@ -481,8 +481,9 @@ const reorderExploreMediaByCategory = (items: any[]): any[] => {
       },
       "stroke": {
         "weight": {
-          "value": 400,
-          "unit": "weight"
+          "value": 300,
+          "unit": "weight",
+          "description": "clean, modern, standard strokes"
         }
       },
       "color": {
@@ -491,30 +492,34 @@ const reorderExploreMediaByCategory = (items: any[]): any[] => {
     },
     "output": {
       "format": "png",
-      "size": "1024x1024",
+      "size": "1920x1080",
+      "quality_preset": "ultra",
       "background": "#FFFFFF"
     },
     "constraints": {
       "single_output": true,
-      "no_variations_or_set": true
+      "no_variations_or_set": true,
+      "canvas_ratio": "16:9"
     },
     "negative_prompt": "3D, photo, realism, shading, gradients, textures, raster, pixelated, complex details, multiple icons, variations, set, collage, hand-drawn, overly detailed, skeuomorphic, shadows, outer border, frame, container shape, rounded square backdrop, card outline",
     "brand_tone": "Google Material Design, clean, minimal, consistent, modern, utilitarian",
     "style_rules": {
-      "inspiration": "Google Material Symbols (fonts.google.com/icons)",
+      "inspiration": "Premium illustrative iconography, modern app icons, expressive vector art",
       "render_type": "outlined",
-      "stroke_weight_map": "weight 100-900 -> 1-4px, perfectly uniform stroke width",
+      "stroke_weight_map": "Standard strokes (weight 300), perfectly uniform width.",
       "corner_radius_map": "rounded -> 6-12% | sharp -> 0% | outlined -> 2-4%",
-      "grid": "24x24 dp material design icon grid",
-      "alignment": "pixel-perfect, centered within the 24x24 grid",
-      "geometry": "simple, geometric, bold, with minimal detail",
+      "grid": "16:9 widescreen canvas, centered focus",
+      "alignment": "pixel-perfect, centered within the 1920x1080 canvas",
+      "geometry": "expressive, illustrative, detailed, yet clean and professional",
       "line_caps": "rounded",
       "line_joins": "rounded"
     },
     "composition": {
       "elements": "exactly one icon, centered",
-      "margin": "15%",
-      "forbidden": "no surrounding frame, no border, no container shape, no backdrop; icon strokes only"
+      "margin": "25% standard empty padding on all sides",
+      "scale": "The icon must occupy exactly 40% of the canvas height to maintain consistency.",
+      "quality": "Ultra-high definition, vector-like precision, clean paths, no aliasing",
+      "forbidden": "no surrounding frame, no border, no container shape, no backdrop, DO NOT fill the canvas"
     }
   }, null, 2);
 
@@ -900,8 +905,8 @@ const imagePromptDisplay = $('#image-prompt-display') as HTMLTextAreaElement;
           position: absolute;
           left: 50%;
           top: 50%;
-          width: 400px;
-          height: 400px;
+          width: 600px;
+          height: 600px;
           object-fit: contain;
           background: transparent;
           opacity: 0;
@@ -1059,7 +1064,6 @@ const p2dGenerateMotionFromPreviewBtn = $('#p2d-generate-motion-from-preview-btn
           }
         })
       );
-      console.log('2D Placeholder loaded images:', loadedImages.length);
 
       if (loadedImages.length === 0) return;
 
@@ -1086,8 +1090,8 @@ const p2dGenerateMotionFromPreviewBtn = $('#p2d-generate-motion-from-preview-btn
           position: absolute;
           left: 50%;
           top: 50%;
-          width: 240px;
-          height: 240px;
+          width: 400px;
+          height: 400px;
           border-radius: 16px;
           object-fit: contain;
           background: transparent;
@@ -1198,8 +1202,8 @@ const p2dGenerateMotionFromPreviewBtn = $('#p2d-generate-motion-from-preview-btn
           position: absolute;
           left: 50%;
           top: 50%;
-          width: 240px;
-          height: 240px;
+          width: 480px;
+          height: 480px;
           border-radius: 16px;
           object-fit: contain;
           background: transparent;
@@ -1717,11 +1721,11 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
               if (videoTab) videoTab.classList.remove('active');
               
               // Update preview content
-              const resultImage3d = $('#result-image') as HTMLImageElement;
-              const resultVideo3d = $('#result-video') as HTMLVideoElement;
+              const resultImage3d = document.querySelector('#page-id-3d .result-image') as HTMLImageElement;
+              const resultVideo3d = document.querySelector('#page-id-3d .result-video') as HTMLVideoElement;
               const resultIdlePlaceholder3d = $('#result-idle-placeholder');
               const motionPromptPlaceholder3d = $('#motion-prompt-placeholder');
-              
+
               if (resultImage3d) resultImage3d.classList.remove('hidden');
               if (resultVideo3d) resultVideo3d.classList.add('hidden');
               if (resultIdlePlaceholder3d) resultIdlePlaceholder3d.classList.add('hidden');
@@ -1766,11 +1770,11 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
                 if (videoTab) videoTab.classList.remove('active');
                 
                 // Update preview content
-                const resultImage3d = $('#result-image') as HTMLImageElement;
-                const resultVideo3d = $('#result-video') as HTMLVideoElement;
+                const resultImage3d = document.querySelector('#page-id-3d .result-image') as HTMLImageElement;
+                const resultVideo3d = document.querySelector('#page-id-3d .result-video') as HTMLVideoElement;
                 const resultIdlePlaceholder3d = $('#result-idle-placeholder');
                 const motionPromptPlaceholder3d = $('#motion-prompt-placeholder');
-                
+
                 if (resultImage3d) {
                   resultImage3d.classList.remove('hidden');
                   setTimeout(() => resultImage3d.classList.add('visible'), 50);
@@ -1789,16 +1793,16 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
               if (videoTab) {
                 videoTab.classList.add('active');
                 if (imageTab) imageTab.classList.remove('active');
-                
+
                 // Ensure header is visible
                 const header3d = resultItemMain3d.querySelector('.result-content-header');
                 if (header3d) {
                   header3d.classList.remove('hidden');
                 }
-                
+
                 // Update preview content
-                const resultImage3d = $('#result-image') as HTMLImageElement;
-                const resultVideo3d = $('#result-video') as HTMLVideoElement;
+                const resultImage3d = document.querySelector('#page-id-3d .result-image') as HTMLImageElement;
+                const resultVideo3d = document.querySelector('#page-id-3d .result-video') as HTMLVideoElement;
                 const resultIdlePlaceholder3d = $('#result-idle-placeholder');
                 const motionPromptPlaceholder3d = $('#motion-prompt-placeholder');
                 
@@ -2509,6 +2513,27 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
       }, durationMs);
     }
   };
+  // Helper to resize base64 image to target dimensions
+  const resizeImageBase64 = (base64: string, mimeType: string, width: number, height: number): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Failed to get canvas context'));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL(mimeType).split(',')[1]);
+      };
+      img.onerror = reject;
+      img.src = `data:${mimeType};base64,${base64}`;
+    });
+  };
+
   const generateImage = async (
     prompt: string,
     resultImgElement: HTMLImageElement | null,
@@ -2518,7 +2543,8 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
     generateBtn: HTMLElement,
     referenceImages: ({ file: File; dataUrl: string } | null)[] = [],
     aspectRatio?: string,
-    temperature: number = 1
+    temperature: number = 1,
+    modelId: string = 'gemini-2.5-flash-image'
   ) => {
     updateButtonLoadingState(generateBtn, true);
     // Keep idle placeholder visible, don't show skeleton loading bar
@@ -2582,15 +2608,14 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
       const config: any = {
         responseModalities: [Modality.IMAGE],
         temperature,
+        imageConfig: {
+          aspectRatio: aspectRatio || '16:9',
+          imageSize: '2K'
+        }
       };
-      
-      // Add aspectRatio for 3D Studio (16:9 landscape)
-      if (aspectRatio) {
-        config.aspectRatio = aspectRatio;
-      }
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+        model: modelId,
         contents: { parts },
         config,
       });
@@ -2618,13 +2643,13 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
             img.src = dataUrl;
           });
           
-          // Resize to 1024x576 (16:9) without cropping (letterboxing)
-          const targetWidth = 1024;
-          const targetHeight = 576;
+          // Resize to 1920x1080 (16:9) without cropping (letterboxing)
+          const targetWidth = 1920;
+          const targetHeight = 1080;
           const targetRatio = targetWidth / targetHeight;
           const currentRatio = img.width / img.height;
           
-          // Always resize to 1024x576, using letterboxing to avoid cropping
+          // Always resize to 1920x1080, using letterboxing to avoid cropping
           
           const canvas = document.createElement('canvas');
           canvas.width = targetWidth;
@@ -2636,7 +2661,9 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
             ctx.fillRect(0, 0, targetWidth, targetHeight);
             
             // Calculate scaling to fit entire image without cropping (letterbox)
-            const scale = Math.min(targetWidth / img.width, targetHeight / img.height);
+            // Apply a 0.85 scale factor to ensure consistent sizing and safe margins
+            const scaleFactor = 0.85;
+            const scale = Math.min(targetWidth / img.width, targetHeight / img.height) * scaleFactor;
             const drawWidth = img.width * scale;
             const drawHeight = img.height * scale;
             const drawX = (targetWidth - drawWidth) / 2;
@@ -2701,7 +2728,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
       const style = 'outlined'; // Style selector removed, default to outlined
       const fill = (document.querySelector('#p2d-fill-toggle') as HTMLInputElement).checked;
       const weightSlider = document.querySelector('#p2d-weight-slider') as HTMLInputElement | null;
-      const weight = weightSlider ? parseInt(weightSlider.value, 10) : 400;
+      const weight = weightSlider ? parseInt(weightSlider.value, 10) : 300;
       const color = (document.querySelector('#p2d-color-picker') as HTMLInputElement).value;
 
       template.subject = subject;
@@ -2726,12 +2753,14 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
   };
   
   const handleGenerateImage2d = async () => {
+    if (isGenerating) return;
     if (!imagePromptSubjectInput2d.value) {
         showToast({ type: 'error', title: 'Input Required', body: 'Please enter a subject for your icon.' });
         imagePromptSubjectInput2d.focus();
         return;
     }
-    
+    isGenerating = true;
+
     update2dPromptDisplay();
 
     // Reset modal state before showing
@@ -2786,7 +2815,10 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
       resultError2d,
       resultIdlePlaceholder2d,
       imageGenerateBtn2d,
-      finalReferenceImages
+      finalReferenceImages,
+      '16:9',
+      1,
+      'gemini-3-pro-image-preview'
     );
 
     if (imageData) {
@@ -2810,12 +2842,12 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
             // Reset right panel history and seed with "Original" entry for this new base asset
             resetRightHistoryForBaseAsset2d(newImage);
             await setInitialMotionFrames2d(newImage);
-
+ 
         const dataUrl = `data:${newImage.mimeType};base64,${newImage.data}`;
         const newLibraryItem = { id: newImage.id, dataUrl, mimeType: newImage.mimeType };
 
         uploadGeneration(dataUrl, newImage.mimeType, `${newImage.id}.${newImage.mimeType.split('/')[1] || 'png'}`).catch(err => { console.error('[upload 2d]', err); });
-        logGeneration('image', 'gemini-2.5-flash-image', imagePromptSubjectInput2d.value).catch(() => {});
+        logGeneration('image', 'gemini-3-pro-image-preview', imagePromptSubjectInput2d.value).catch(() => {});
 
         imageLibrary.unshift(newLibraryItem);
         if (imageLibrary.length > 10) {
@@ -2858,6 +2890,8 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
         if (p2dLoaderModal) {
             p2dLoaderModal.classList.add('hidden');
         }
+    } finally {
+        isGenerating = false;
     }
   };
   const updateMotionUI2d = () => {
@@ -4295,7 +4329,7 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
     lines.push(hasShadow
       ? `- Soft, uniform studio lighting with a soft ground/drop shadow beneath the object`
       : `- Soft, uniform lighting with no harsh shadows`);
-    lines.push(`- Color palette: Dominant blue (#2E6BFF), secondary blue (#4FC3F7), white (#FFFFFF), warm accent yellow (#FFD45A)`);
+    lines.push(`- Color palette: Dominant blue (#2962FF), secondary blue (#4FC3F7), white (#FFFFFF), warm accent yellow (#FFD45A)`);
     lines.push(`- Pillowy, inflated, soft-volume forms with rounded edges (85% fillet)`);
     lines.push(`- Chibi/stylized proportions, simplified anatomy`);
     lines.push(hasShadow
@@ -4331,7 +4365,7 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
 
     if (isFix) {
       lines.push('🔧 FIX MODE: Maintain the existing model, proportions, silhouette, and camera. Only adjust colors as specified.');
-      lines.push(`Background color: ${backgroundColor}. Main palette: ${palette.dominant_blue || '#2E6BFF'} and ${palette.neutral_white || '#FFFFFF'}.`);
+      lines.push(`Background color: ${backgroundColor}. Main palette: ${palette.dominant_blue || '#2962FF'} and ${palette.neutral_white || '#FFFFFF'}.`);
     } else {
       lines.push(`🎨 COLOR SPECIFICATION:`);
       lines.push(`Background: solid ${backgroundColor}.`);
@@ -4406,8 +4440,8 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
 
     if (!isFix) {
       lines.push(hasShadow
-        ? `✅ LAYOUT REQUIREMENT: Ensure the subject remains centered, with a soft ground shadow beneath it, fully contained within the frame with clean margins.`
-        : `✅ LAYOUT REQUIREMENT: Ensure the subject remains centered, floating, and fully contained within the frame with clean margins.`);
+        ? `✅ LAYOUT REQUIREMENT: Ensure the subject remains centered, ZOOMED OUT, and small relative to the canvas. Must have at least 30% empty padding on all sides. Include a soft ground shadow beneath it.`
+        : `✅ LAYOUT REQUIREMENT: Ensure the subject remains centered, ZOOMED OUT, and small relative to the canvas. Must have at least 30% empty padding on all sides, floating.`);
     }
 
     lines.push(``);
@@ -4437,11 +4471,13 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
   };
 
   const handleGenerateImage3d = async () => {
+    if (isGenerating) return;
     if (!imagePromptSubjectInput.value) {
         showToast({ type: 'error', title: 'Input Required', body: 'Please enter a subject for your image.' });
         imagePromptSubjectInput.focus();
         return;
     }
+    isGenerating = true;
 
     // Reset modal state before showing
     resetLoaderModal(imageGenerationLoaderModal);
@@ -4583,6 +4619,7 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
       showToast({ type: 'error', title: 'Generation Failed', body: 'Failed to generate subject image.' });
     } finally {
       loaderModal?.classList.add('hidden');
+      isGenerating = false;
     }
   };
 
@@ -4634,14 +4671,16 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
   };
   // Main Page Generate Functions (3D Studio functionality)
   const handleGenerateImageMain = async () => {
+    if (isGenerating) return;
     const generateInput = document.getElementById('generate-input') as HTMLInputElement;
     const studioSelector = document.getElementById('studio-selector') as HTMLSelectElement;
-    
+
     if (!generateInput?.value.trim()) {
       showToast({ type: 'error', title: 'Input Required', body: 'Please enter a prompt for your image.' });
       generateInput?.focus();
       return;
     }
+    isGenerating = true;
 
     const userPrompt = generateInput.value.trim();
     const selectedStudio = studioSelector?.value || '3d';
@@ -4732,7 +4771,7 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
 
         // Usage 로깅 + Supabase Storage 업로드 (fire and forget)
         const genType = selectedStudio === 'icon' ? 'icon' : 'image';
-        logGeneration(genType as any, 'gemini-2.0-flash-preview-image-generation', userPrompt).catch(() => {});
+        logGeneration(genType as any, 'gemini-2.5-flash-image', userPrompt).catch(() => {});
         uploadGeneration(dataUrl, newImage.mimeType, `${newImage.id}.${newImage.mimeType.split('/')[1] || 'png'}`).catch(() => {});
         if (imageLibrary.length > 20) {
           imageLibrary.splice(20);
@@ -4779,6 +4818,7 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
         body: 'Failed to generate image. Please try again.' 
       });
     } finally {
+      isGenerating = false;
       // Reset loading state
       if (generateBtn) {
         generateBtn.classList.remove('loading');
@@ -5145,6 +5185,8 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
   });
 
   const handleGenerateImageStudio = async () => {
+    if (isGenerating) return;
+    isGenerating = true;
     const promptInput = $('#image-prompt-subject-input-image') as HTMLInputElement;
     const promptText = promptInput?.value?.trim() || '';
     const temperature = getImageStudioTemperature();
@@ -5442,6 +5484,7 @@ Make sure the result is photorealistic and aesthetically pleasing.`;
       showToast({ type: 'error', title: 'Generation Failed', body: errorMessage });
       resultError?.classList.remove('hidden');
     } finally {
+      isGenerating = false;
       updateButtonLoadingState(generateBtn, false);
       loaderModal?.classList.add('hidden');
     }
@@ -5583,6 +5626,7 @@ Make sure the result is photorealistic and aesthetically pleasing.`;
         logGeneration('video', 'veo-2', '').catch(() => {});
         uploadBlobGeneration(videoBlob, videoBlob.type || 'video/mp4', `video_3d_${Date.now()}.mp4`).catch(() => {});
 
+        if (currentGeneratedImage.videoDataUrl) URL.revokeObjectURL(currentGeneratedImage.videoDataUrl);
         currentGeneratedImage.videoDataUrl = videoDataUrl;
         const historyItem = imageHistory.find(item => item.id === currentGeneratedImage!.id);
         if (historyItem) {
@@ -6414,159 +6458,20 @@ Make sure the result is photorealistic and aesthetically pleasing.`;
 
     try {
         const userPrompt = p2dMotionPromptFinalEnglish?.value || '';
-        
-        // Preserve user's motion intent but enforce rigid transform constraints
-        let motionInstruction = userPrompt.trim();
-        
-        // Convert organic/fluid terms to geometric transform equivalents (preserving intent)
-        // NOTE: Vertical movement is FORBIDDEN - remove any vertical motion terms
-        motionInstruction = motionInstruction
-            .replace(/breathing|breath|breathing-like/gi, 'uniform scale')
-            .replace(/pulsing|pulse/gi, 'uniform scale')
-            .replace(/expands?|contracts?|grows?|shrinks?/gi, 'uniform scale')
-            .replace(/rotates?|spins?|turns?/gi, 'rotate')
-            .replace(/floats?|rises?|falls?|bounces?|vertical|up|down|upward|downward/gi, '') // Remove vertical movement terms
-            .replace(/sways?|moves? horizontally|shifts? left|shifts? right|horizontal displacement/gi, 'horizontal translate')
-            .replace(/gentle|smooth|subtle|minimal/gi, 'precise')
-            .replace(/seamless/gi, 'continuous')
-            .replace(/effect/gi, 'transform')
-            .replace(/centered in place|in place/gi, 'centered transform')
-            .replace(/maintain.*proportions|original proportions/gi, 'maintain exact pixel positions');
-        
-        // Extract scale values if mentioned (e.g., "scale 1.0 to 1.03" or "3%")
-        const scaleMatch = motionInstruction.match(/scale\s*([\d.]+)\s*to\s*([\d.]+)|scale\s*([\d.]+)|(\d+)%/i);
-        let scaleRange = '';
-        if (scaleMatch) {
-            if (scaleMatch[4]) {
-                // Percentage match (e.g., "3%")
-                const percent = parseFloat(scaleMatch[4]);
-                const max = 1 + (percent / 100);
-                scaleRange = ` (scale range: 1.0 to ${max.toFixed(3)})`;
-            } else {
-            const min = scaleMatch[1] || scaleMatch[3] || '1.0';
-            const max = scaleMatch[2] || '1.03';
-            scaleRange = ` (scale range: ${min} to ${max})`;
-            }
-        }
-        
-        // Wrap user's motion instruction with ultra-rigid transform constraints
-        motionInstruction = `${motionInstruction}${scaleRange}. 
+        const motionInstruction = userPrompt.trim();
 
-🚨🚨🚨 ABSOLUTE CRITICAL REQUIREMENT 🚨🚨🚨
-Apply this motion as a PURE MATHEMATICAL TRANSFORM to the COMPLETE icon as a SINGLE RIGID BODY. The icon is a FROZEN STATIC IMAGE - think of it as a PNG file in a video editor where ONLY the transform matrix (scale/rotate/translate) changes. The icon image itself is PERMANENTLY LOCKED and CANNOT be modified in ANY way.
+        const finalPrompt = `Animate this flat 2D line-art illustration with subtle micro-motion. All motion must stay strictly within the flat 2D plane.
 
-MANDATORY CONSTRAINTS:
-- The icon shape, lines, edges, curves, and ALL visual elements must remain 100% PIXEL-PERFECT IDENTICAL
-- Every pixel must stay in the EXACT same position relative to the icon's coordinate system
-- Only the ENTIRE icon's transform matrix can change (scale/rotate/translate applied to the whole icon as one unit)
-- NO shape deformation, NO line changes, NO pixel movement, NO structural modifications
-- The icon must look like a static image being zoomed/rotated/moved, NOT an animated drawing`;
+MOTION: ${motionInstruction}
 
-        const finalPrompt = `🚨🚨🚨🚨🚨🚨🚨🚨🚨 CRITICAL: NO LIQUID, NO FLOW, NO DEFORMATION 🚨🚨🚨🚨🚨🚨🚨🚨🚨
-
-🔴🔴🔴🔴🔴🔴🔴🔴🔴 ULTIMATE RULE - READ THIS FIRST 🔴🔴🔴🔴🔴🔴🔴🔴🔴
-• This is NOT a morph - ABSOLUTELY NO MORPHING ALLOWED
-• This is NOT a shape change - THE SHAPE CAN NEVER CHANGE
-• It is a simple position shift - ONLY MOVE THE ENTIRE ICON AS ONE UNIT
-• Use camera translation, not deformation - CAMERA MOVES, ICON STAYS IDENTICAL
-• ⚠️ NO VERTICAL MOVEMENT - ONLY horizontal movement allowed (NO up/down/floating/rising/falling/bouncing)
-• The icon is a FROZEN STATIC IMAGE - like a photograph or printed sticker
-• Only the camera/viewport moves horizontally - the icon itself NEVER changes
-• ⚠️ NO FLOWING EFFECTS: The icon must NEVER appear to flow, drip, melt, or deform like liquid
-• ⚠️ LINES ARE FROZEN: Every line, curve, and edge is PERMANENTLY LOCKED - they cannot bend, warp, or change shape
-• ⚠️ SHAPE IS ABSOLUTE: The icon's silhouette, outline, and internal structure are 100% FIXED - like a laser-cut stencil
-
-⚠️⚠️⚠️ ABSOLUTE PROHIBITION ⚠️⚠️⚠️
-DO NOT create liquid, flowing, melting, or fluid-like motion. DO NOT deform, warp, or morph the icon shape. DO NOT change ANY lines, curves, edges, or shapes. The icon is a RIGID, SOLID object that can ONLY move as a whole unit.
-
-THIS IS A STATIC RASTER IMAGE FILE (PNG format). THE ICON IMAGE ITSELF IS PERMANENTLY FROZEN AND ABSOLUTELY CANNOT BE MODIFIED IN ANY WAY.
-
-🔴 CRITICAL CLARIFICATION - REPEATED FOR EMPHASIS 🔴
-• This is NOT a morph - NO MORPHING WHATSOEVER
-• This is NOT a shape change - SHAPE IS PERMANENTLY LOCKED
-• It is a simple position shift - ONLY TRANSLATION ALLOWED
-• Use camera translation, not deformation - CAMERA MOVES, ICON DOES NOT CHANGE
-
-🔴🔴🔴 LINE ART / VECTOR ICON PRESERVATION 🔴🔴🔴
-This is a LINE ART or VECTOR-STYLE icon. Every single line, curve, edge, corner, and detail is PERMANENTLY FIXED.
-- Lines must remain EXACTLY the same thickness, length, and curvature - they are FROZEN
-- Curves must remain EXACTLY the same shape and position - they cannot bend or warp
-- Edges must remain EXACTLY the same angle and sharpness - they are LOCKED
-- NO line deformation, NO curve modification, NO edge smoothing, NO corner rounding
-- NO flowing lines, NO wavy lines, NO liquid-like line movement
-- The icon's line structure is ABSOLUTELY IMMUTABLE - like a printed sticker or a laser-cut shape
-- Think of the icon as a RIGID STENCIL - the lines are carved in stone and CANNOT change
-
-⚠️⚠️⚠️ MANDATORY REQUIREMENT ⚠️⚠️⚠️
-This is NOT an animated drawing or illustration. This is a STATIC IMAGE FILE being animated with geometric transform properties ONLY (like CSS transform: scale/rotate/translate or After Effects transform controls).
-
-The source image is a FROZEN RASTER. Every single pixel must remain in the EXACT same position relative to the icon's coordinate system. The icon image file itself NEVER changes - it is a FIXED, UNCHANGEABLE static image.
-
-🔴🔴🔴 LIQUID/FLUID MOTION IS COMPLETELY FORBIDDEN 🔴🔴🔴
-- NO liquid-like flow, NO dripping, NO melting, NO water-like movement
-- NO organic, fluid, or elastic motion that suggests the icon is made of liquid or flexible material
-- NO flowing shapes, NO morphing lines, NO deforming edges
-- The icon is SOLID and RIGID - like a metal coin, printed sticker, or laser-cut acrylic
-- Motion must be MECHANICAL and RIGID, not organic or fluid
-- The icon must look like a SOLID OBJECT being moved, NOT a liquid being poured
-- Every pixel of the icon is FROZEN - like a photograph that can only be moved, rotated, or scaled
-
-🔒🔒🔒 SHAPE PRESERVATION IS ABSOLUTE AND NON-NEGOTIABLE 🔒🔒🔒
-- The icon's shape, form, silhouette, and ALL geometric properties are PERMANENTLY LOCKED
-- Every line, curve, edge, corner, and detail must remain 100% IDENTICAL in every frame
-- The icon must appear as if it's a photograph being zoomed/rotated/moved, NOT a drawing being animated
-- Think: Take a screenshot of frame 1, apply ONLY transform matrix changes (scale/rotate/translate), that's the ONLY difference between frames
-- If you compare frame 1 and frame N side-by-side, they should be IDENTICAL except for position/rotation/scale
-- The icon's visual appearance (lines, shapes, details) must be PIXEL-PERFECT IDENTICAL across ALL frames
-
-🎯 ANIMATION INSTRUCTION:
-${motionInstruction}
-
-⚠️⚠️⚠️ REMEMBER: This is NOT a morph, NOT a shape change. It is ONLY a simple position shift using camera translation, NOT deformation. ⚠️⚠️⚠️
-
-📐 ALLOWED TRANSFORMS ONLY (applied to the COMPLETE icon as ONE RIGID UNIT):
-- Uniform scale: Scale the ENTIRE icon uniformly (like zooming a photo) - maximum 1.0 to 1.03
-- Rotation: Rotate the ENTIRE icon as one piece (like spinning a coin on a table)
-- Horizontal translation ONLY: Move the ENTIRE icon horizontally (left/right) - like moving a sticker on paper
-- ⚠️ VERTICAL MOVEMENT IS FORBIDDEN: NO up/down movement, NO floating, NO rising, NO falling, NO bouncing
-- These transforms apply to the COMPLETE icon simultaneously as a SINGLE RIGID OBJECT
-- NO independent part movement, NO separate element animation, NO component-level changes
-
-🚫🚫🚫 ABSOLUTELY FORBIDDEN - THE ICON FILE CANNOT CHANGE IN ANY WAY 🚫🚫🚫
-- ⚠️ VERTICAL MOVEMENT IS FORBIDDEN: NO up/down movement, NO floating, NO rising, NO falling, NO bouncing, NO vertical translation
-- ⚠️ FLOWING/DEFORMING IS FORBIDDEN: NO flowing shapes, NO deforming lines, NO morphing edges, NO liquid-like appearance
-- ANY shape deformation, morphing, warping, bending, stretching, or distortion (COMPLETELY FORBIDDEN)
-- ANY line thickness changes, wavy lines, curved lines becoming straight, or straight lines becoming curved (COMPLETELY FORBIDDEN)
-- ANY flowing, dripping, melting, liquid-like, water-like, or fluid-like effects (THIS IS THE #1 PRIORITY - COMPLETELY FORBIDDEN)
-- ANY appearance that the icon is "flowing", "melting", "deforming", or "changing shape" (COMPLETELY FORBIDDEN)
-- The icon must look EXACTLY like the source image in every frame - like a static PNG being moved
-- ANY elastic, rubber-like, organic, flexible, or soft material behavior (COMPLETELY FORBIDDEN)
-- ANY motion that suggests the icon is made of liquid, water, gel, or any fluid substance (COMPLETELY FORBIDDEN)
-- ANY wave-like, ripple-like, or undulating motion that deforms the shape (COMPLETELY FORBIDDEN)
-- ANY line movement, curve modification, edge deformation, or corner changes (COMPLETELY FORBIDDEN)
-- ANY part of the icon changing shape, size, or position relative to other parts (COMPLETELY FORBIDDEN)
-- ANY part of the icon moving independently from other parts
-- ANY color changes, fading, blending, or opacity changes
-- ANY new elements appearing or existing elements disappearing
-- ANY camera movement, zoom, perspective changes, or lens effects
-- ANY particle effects, trails, glows, shadows, or visual artifacts
-- DO NOT interpret motion words (swimming, flying, running, etc.) as shape changes - these are just transform descriptions
-- NO pixel-level changes, NO rasterization effects, NO anti-aliasing changes
-- NO edge smoothing, NO outline changes, NO fill pattern changes
-- NO vector path changes, NO bezier curve modifications, NO anchor point movement
-- NO texture changes, NO material changes, NO surface property changes
-- The icon must remain PIXEL-PERFECT IDENTICAL in every single frame
-
-🔒🔒🔒 TECHNICAL REQUIREMENT 🔒🔒🔒
-The icon must appear IDENTICAL in every single frame - as if you took a screenshot of the first frame and applied ONLY CSS transform properties (scale/rotate/translate) to it. The icon image file itself is a FIXED, UNCHANGEABLE static image.
-
-Think: PNG image file + CSS transform = The PNG file NEVER changes, only its transform matrix changes. Motion words in the instruction describe HOW to transform the icon, NOT how to change the icon's shape.
-
-IMAGINE: You have a PNG file on your computer. You open it in a video editor and apply ONLY transform controls (scale, rotation, position). The PNG file itself remains 100% unchanged - only its position, rotation, and scale in the video change. That is EXACTLY what you must do here.
-
-🚫 NEGATIVE PROMPT (MUST AVOID AT ALL COSTS):
-shape deformation, morphing, warping, distortion, line changes, thickness changes, pixel changes, rasterization, anti-aliasing changes, edge smoothing, outline changes, fill changes, color changes, opacity changes, independent part movement, camera movement, zoom, perspective, particle effects, trails, glows, shadows, visual artifacts, organic movement, fluid movement, elastic movement, rubber movement, material changes, texture changes, icon shape changes, vector changes, path changes, bezier curve changes, anchor point movement, component animation, separate element movement, part-by-part animation`;
-
+STRICT RULES:
+- FLAT 2D ONLY: This is a flat illustration on paper. Zero depth, zero Z-axis, zero 3D perspective. No zoom in, no zoom out, no sense of approaching or receding distance.
+- STATIC CAMERA: The camera does not move at all. Fixed viewpoint, fixed framing.
+- NO WHOLE-ICON ROTATION: Do not rotate, spin, or flip the entire illustration as a single rigid object.
+- NATURAL ELEMENT MOTION: Individual elements (wings, petals, limbs, leaves) may animate naturally within the flat plane.
+- NO DRIPPING: No element should drip, sag, flow downward, or show any liquid or gravity-pulled behavior.
+- Preserve flat line-art style: clean black lines on white background, no shadows or textures.
+- Do NOT add any backgrounds, particles, glows, or new visual elements.`;
 
         const config: any = {
             numberOfVideos: 1,
@@ -6576,29 +6481,27 @@ shape deformation, morphing, warping, distortion, line changes, thickness change
 
         const selectedModel = (document.querySelector('input[name="p2d-motion-model"]:checked') as HTMLInputElement)?.value || 'veo-3.1-fast-generate-preview';
 
-        if (p2dMotionPromptFinalEnglish) {
-            p2dMotionPromptFinalEnglish.value = finalPrompt;
-        }
-
         const payload: any = {
             model: selectedModel,
             prompt: finalPrompt,
-            negativePrompt: 'vertical movement, up, down, upward, downward, floating, rising, falling, bouncing, vertical translation, vertical displacement, flowing, flowing shape, flowing lines, deforming, morphing, morph, shape change, shape deformation, liquid, fluid, dripping, melting, water-like, gel-like, liquid motion, fluid motion, wave motion, ripple effect, undulating, organic flow, liquid deformation, fluid deformation, shape deformation, morphing, warping, distortion, line changes, thickness changes, pixel changes, rasterization, anti-aliasing changes, edge smoothing, outline changes, fill changes, color changes, opacity changes, independent part movement, camera movement, zoom, perspective, particle effects, trails, glows, shadows, visual artifacts, organic movement, fluid movement, elastic movement, rubber movement, material changes, texture changes, icon shape changes, vector changes, path changes, bezier curve changes, anchor point movement, component animation, separate element movement, part-by-part animation, shape modification, geometry changes, structural changes, form changes, silhouette changes, edge deformation, curve modification, corner rounding, detail loss, pixel displacement, raster distortion, image warping, perspective distortion, lens distortion, barrel distortion, pincushion distortion, breathing effect distortion, pulsing shape change, organic scaling, non-uniform scaling, anisotropic scaling, shearing, skewing, stretching, compression, elongation, contraction, expansion, growth, shrinking, size variation, dimension changes, aspect ratio changes, proportional changes, liquid flow, fluid flow, water flow, gel flow, liquid animation, fluid animation, wave-like motion, ripple-like motion, undulating motion, organic deformation, fluid deformation, liquid-like behavior, fluid-like behavior, deformation, flowing appearance, melting appearance, deforming appearance, camera translation only, position shift only',
             config,
         };
 
         if (motionFirstFrameImage2d) {
+            const firstFrameBase64 = await blobToBase64(motionFirstFrameImage2d.file);
+            const firstFrameMime = motionFirstFrameImage2d.file.type;
             payload.image = {
-                imageBytes: await blobToBase64(motionFirstFrameImage2d.file),
-                mimeType: motionFirstFrameImage2d.file.type,
+                imageBytes: firstFrameBase64,
+                mimeType: firstFrameMime,
             };
-        }
-
-        if (motionLastFrameImage2d) {
-            payload.config.lastFrame = {
-                imageBytes: await blobToBase64(motionLastFrameImage2d.file),
-                mimeType: motionLastFrameImage2d.file.type,
-            };
+            // Only set lastFrame if user explicitly set a different last frame
+            if (motionLastFrameImage2d && motionLastFrameImage2d !== motionFirstFrameImage2d) {
+                const lastFrameBase64 = await blobToBase64(motionLastFrameImage2d.file);
+                payload.config.lastFrame = {
+                    imageBytes: lastFrameBase64,
+                    mimeType: motionLastFrameImage2d.file.type,
+                };
+            }
         }
 
         let operation = await ai.models.generateVideos(payload);
@@ -10283,22 +10186,31 @@ regenerate3DBtn?.addEventListener('click', () => {
   const setupDynamicPlaceholders = () => {
     // 2D Studio placeholders
     const p2dPlaceholders = [
-      'ex. 마법 지팡이를 휘두르는 부엉이',
-      'ex. 스케이트보드를 타는 고양이',
-      'ex. 커피를 마시며 코딩하는 토끼',
-      'ex. 우주선을 조종하는 펭귄',
-      'ex. 책상에서 엎드려 자는 곰',
-      'ex. 음악을 들으며 산책하는 강아지'
+      'ex. 나무에서 놀고 있는 고양이',
+      'ex. 숲 속을 달리는 강아지',
+      'ex. 꽃 위에 앉은 나비',
+      'ex. 구름 위를 나는 비행기',
+      'ex. 책상 위에 펼쳐진 책',
+      'ex. 물 속에서 수영하는 물고기'
     ];
     
     // 3D Studio placeholders
     const p3dPlaceholders = [
-      'ex. 전기 기타를 연주하는 사이버펑크 고양이, 로우폴리 스타일',
-      'ex. 마법 물약을 끓이고 있는 늙은 마법사, 사실적인 질감',
-      'ex. 당근 로켓을 타고 날아가는 토끼, 픽사 애니메이션 스타일',
-      'ex. 검을 들고 훈련하는 기사, 화려한 디테일',
-      'ex. 오토바이를 타고 질주하는 로봇, 시네마틱 라이팅',
-      'ex. 카메라를 들고 사진을 찍는 레트로 스타일의 사슴'
+      'ex. 왕관을 쓴 귀여운 펭귄 캐릭터',
+      'ex. 불꽃을 내뿜는 아기 드래곤',
+      'ex. 빛나는 마법 크리스탈 보석',
+      'ex. 우주복을 입은 아기 외계인',
+      'ex. 책을 읽는 안경 낀 부엉이',
+      'ex. 레트로 게임 컨트롤러',
+      'ex. 별이 쏟아지는 마법 보물 상자',
+      'ex. 무지개 꼬리를 가진 미니 유니콘',
+      'ex. 귀여운 미니 우주선',
+      'ex. 왕관을 쓴 도넛 캐릭터',
+      'ex. 빛나는 골든 트로피',
+      'ex. 눈이 달린 귀여운 버섯',
+      'ex. 달빛을 받은 구름 위의 고양이',
+      'ex. 파란 헬멧을 쓴 미니 우주비행사',
+      'ex. 레트로 카세트 테이프',
     ];
     
     // Image Studio placeholders
@@ -10946,7 +10858,7 @@ The result must be: IDENTICAL shape + PURE VIBRANT ${iconColor} color at MAXIMUM
             ];
             
             const aiResponse = await ai.models.generateContent({
-                model: 'gemini-2.5-flash-image', // Note: Gemini 3.0 Pro Image Preview may not be available yet, using 2.5-flash-image
+                model: 'gemini-3-pro-image-preview', 
                 contents: { parts },
                 config: {
                     responseModalities: [Modality.IMAGE],
@@ -11040,19 +10952,16 @@ The result must be: IDENTICAL shape + PURE VIBRANT ${iconColor} color at MAXIMUM
             // Convert data URL to blob
             const response = await fetch(dataUrl);
             const blob = await response.blob();
-            
-            // Dynamically import background removal (loads WebAssembly only when needed)
-            const { removeBackground } = await import('@imgly/background-removal');
-            
-            // Remove background
-            const blobWithoutBg = await removeBackground(blob);
-            
+
+            const { removeBackgroundFromBlob } = await import('./src/features/studio/2d/utils/imageUtils');
+            const blobWithoutBg = await removeBackgroundFromBlob(blob);
+
             // Convert to base64
             const reader = new FileReader();
             reader.onload = (e) => {
                 const result = e.target?.result as string;
                 const base64Data = result.split(',')[1];
-                
+
                 // Update current image
                 currentGeneratedImage2d.data = base64Data;
                 currentGeneratedImage2d.mimeType = 'image/png';
@@ -11218,66 +11127,13 @@ The result must be: IDENTICAL shape + PURE VIBRANT ${iconColor} color at MAXIMUM
             
             const dataUrl = `data:${currentGeneratedImage2d.mimeType};base64,${currentGeneratedImage2d.data}`;
             
-            // Create image element and wait for it to load
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            
-            await new Promise<void>((resolve, reject) => {
-                img.onload = () => resolve();
-                img.onerror = () => reject(new Error('Failed to load image'));
-                img.src = dataUrl;
-            });
-            
-            // Create canvas
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-                throw new Error('Could not get canvas context');
-            }
-            
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0);
-            
-            // Get image data
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            
             // Update loading message
             if (p2dLoaderMessage) {
                 p2dLoaderMessage.textContent = 'Vectorizing image...';
             }
-            
-            // Convert to SVG using ImageTracer
-            const options = {
-                ltres: 1,
-                qtres: 1,
-                pathomit: 8,
-                colorsampling: 2,
-                numberofcolors: 256,
-                mincolorratio: 0.02,
-                colorquantcycles: 5,
-                scale: 1,
-                roundcoords: 1,
-                blurradius: 0,
-                blurdelta: 20,
-                strokewidth: 1,
-                linefilter: true,
-                layercontainer: 'g',
-                layerbgcolor: '',
-                viewbox: false,
-                desc: false,
-                lcpr: 0,
-                qcpr: 0,
-                minroundedstops: 0,
-                minrectroundedstops: 0,
-                blursvg: false,
-                despeckle: false,
-                despecklelevel: 0,
-                simplifytolerance: 0,
-                corsenabled: false
-            };
-            
-            const svgString = ImageTracer.imagedataToSVG(imageData, options);
+
+            const { convertImageToSVG } = await import('./src/features/studio/2d/utils/imageUtils');
+            const svgString = await convertImageToSVG(dataUrl);
             
             // Show SVG preview modal instead of immediate download
             const svgCodeView = $('#p2d-svg-code-view') as HTMLTextAreaElement;
@@ -11708,19 +11564,16 @@ detailsMoreCopy?.addEventListener('click', async () => {
             // Convert data URL to blob
             const response = await fetch(dataUrl);
             const blob = await response.blob();
-            
-            // Dynamically import background removal (loads WebAssembly only when needed)
-            const { removeBackground } = await import('@imgly/background-removal');
-            
-            // Remove background
-            const blobWithoutBg = await removeBackground(blob);
-            
+
+            const { removeBackgroundFromBlob } = await import('./src/features/studio/2d/utils/imageUtils');
+            const blobWithoutBg = await removeBackgroundFromBlob(blob);
+
             // Convert to base64
             const reader = new FileReader();
             reader.onload = (e) => {
                 const result = e.target?.result as string;
                 const base64Data = result.split(',')[1];
-                
+
                 // Update current image
                 currentGeneratedImage.data = base64Data;
                 currentGeneratedImage.mimeType = 'image/png';
@@ -12125,6 +11978,14 @@ Apply the main color (${objectColor}) thoughtfully as the primary/accent color o
         if (multiviewGrid) multiviewGrid.innerHTML = '';
         multiviewModal?.classList.remove('hidden');
 
+        // Inject spinner keyframe once into <head> so it's guaranteed available
+        if (!document.getElementById('mv-spinner-style')) {
+            const styleEl = document.createElement('style');
+            styleEl.id = 'mv-spinner-style';
+            styleEl.textContent = '@keyframes mvSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}';
+            document.head.appendChild(styleEl);
+        }
+
         // Placeholder cards
         MULTIVIEW_ANGLES.forEach(({ label }) => {
             const card = document.createElement('div');
@@ -12132,7 +11993,7 @@ Apply the main color (${objectColor}) thoughtfully as the primary/accent color o
             card.innerHTML = `
                 <div style="width:100%;padding-top:100%;position:relative;background:var(--surface-secondary,#f5f5f5);border-radius:12px;overflow:hidden;">
                     <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-                        <div class="btn-loader" style="position:static;"></div>
+                        <div style="width:28px;height:28px;border:3px solid rgba(0,0,0,0.1);border-top-color:#888;border-radius:50%;box-sizing:border-box;animation:mvSpin 0.8s linear infinite;"></div>
                     </div>
                 </div>
                 <span style="font-size:12px;font-weight:500;text-align:center;color:var(--text-secondary);">${label}</span>`;
@@ -12240,11 +12101,11 @@ STRICT RULES:
         const imageTab = resultItemMain3d.querySelector('.preview-tab-item[data-tab="image"]') as HTMLElement;
         const videoTab = resultItemMain3d.querySelector('.preview-tab-item[data-tab="video"]') as HTMLElement;
         
-        const resultImage3d = $('#result-image') as HTMLImageElement;
-        const resultVideo3d = $('#result-video') as HTMLVideoElement;
+        const resultImage3d = document.querySelector('#page-id-3d .result-image') as HTMLImageElement;
+        const resultVideo3d = document.querySelector('#page-id-3d .result-video') as HTMLVideoElement;
         const resultIdlePlaceholder3d = $('#result-idle-placeholder');
         const motionPromptPlaceholder3d = $('#motion-prompt-placeholder');
-        
+
         if (tabName === 'image') {
             // Switch to Image tab
             if (imageTab) imageTab.classList.add('active');
@@ -12703,22 +12564,26 @@ STRICT RULES:
     const getHomePlaceholderTexts = () => {
       // 2D Studio (Icon Studio) placeholders - remove "ex. " prefix
       const p2dPlaceholders = [
-        '마법 지팡이를 휘두르는 부엉이',
-        '스케이트보드를 타는 고양이',
-        '커피를 마시며 코딩하는 토끼',
-        '우주선을 조종하는 펭귄',
-        '책상에서 엎드려 자는 곰',
-        '음악을 들으며 산책하는 강아지'
+        '귀여운 고양이',
+        '웃고 있는 강아지',
+        '숲 속의 나무',
+        '작은 꽃',
+        '하늘을 나는 비행기',
+        '펼쳐진 책'
       ];
       
       // 3D Studio placeholders - remove "ex. " prefix
       const p3dPlaceholders = [
-        '전기 기타를 연주하는 사이버펑크 고양이, 로우폴리 스타일',
-        '마법 물약을 끓이고 있는 늙은 마법사, 사실적인 질감',
-        '당근 로켓을 타고 날아가는 토끼, 픽사 애니메이션 스타일',
-        '검을 들고 훈련하는 기사, 화려한 디테일',
-        '오토바이를 타고 질주하는 로봇, 시네마틱 라이팅',
-        '카메라를 들고 사진을 찍는 레트로 스타일의 사슴'
+        '왕관 쓴 펭귄 캐릭터',
+        '아기 드래곤',
+        '마법 크리스탈 보석',
+        '우주복 입은 아기 외계인',
+        '안경 쓴 부엉이',
+        '귀여운 도넛 캐릭터',
+        '미니 우주선',
+        '빛나는 골든 트로피',
+        '눈 달린 버섯',
+        '구름 위의 고양이',
       ];
       
       // Check which studio is active based on currentPage

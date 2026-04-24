@@ -23,7 +23,6 @@ let isFFmpegLoaded = false;
  */
 export const loadFFmpeg = async (): Promise<FFmpeg> => {
   if (isFFmpegLoaded && ffmpegInstance) {
-    console.log('[FFmpeg] Using cached instance');
     return ffmpegInstance;
   }
 
@@ -31,7 +30,6 @@ export const loadFFmpeg = async (): Promise<FFmpeg> => {
 
   for (const source of FFMPEG_SOURCES) {
     try {
-      console.log(`[FFmpeg] Initializing FFmpeg via ${source.name}...`);
       showToast({
         type: 'success',
         title: 'Loading Video Converter…',
@@ -40,10 +38,8 @@ export const loadFFmpeg = async (): Promise<FFmpeg> => {
 
       const instance = new FFmpeg();
       instance.on('log', ({ message }) => {
-        console.log('[FFmpeg]', message);
       });
 
-      console.log(`[FFmpeg] Loading core from ${source.coreURL}`);
       await instance.load({
         coreURL: source.coreURL,
         wasmURL: source.wasmURL,
@@ -51,7 +47,6 @@ export const loadFFmpeg = async (): Promise<FFmpeg> => {
 
       ffmpegInstance = instance;
       isFFmpegLoaded = true;
-      console.log('[FFmpeg] Loaded successfully');
       return instance;
     } catch (error) {
       lastError = error;
@@ -88,7 +83,6 @@ export const convertVideoToGif = async (
   let conversionTimeout: number | null = null;
 
   try {
-    console.log('[GIF Conversion] Starting...', videoUrl);
 
     // Set timeout (3 minutes)
     conversionTimeout = window.setTimeout(() => {
@@ -101,7 +95,6 @@ export const convertVideoToGif = async (
       throw new Error('Conversion timeout');
     }, 3 * 60 * 1000);
 
-    console.log('[GIF Conversion] Loading FFmpeg...');
     const ffmpeg = await loadFFmpeg();
 
     // Monitor FFmpeg progress
@@ -109,7 +102,6 @@ export const convertVideoToGif = async (
     let lastProgressTime = Date.now();
 
     const progressHandler = ({ message }: { message: string }) => {
-      console.log('[FFmpeg Progress]', message);
       progressMessages.push(message);
       lastProgressTime = Date.now();
 
@@ -124,23 +116,18 @@ export const convertVideoToGif = async (
     };
     ffmpeg.on('log', progressHandler);
 
-    console.log('[GIF Conversion] Fetching video file...');
     const videoData = await fetchFile(videoUrl);
     const videoDataSize =
       videoData instanceof Uint8Array
         ? videoData.length
         : (videoData as any).byteLength || 0;
-    console.log('[GIF Conversion] Video data fetched, size:', videoDataSize);
 
     if (videoDataSize === 0) {
       throw new Error('Video file is empty');
     }
 
-    console.log('[GIF Conversion] Writing input file...');
     await ffmpeg.writeFile('input.mp4', videoData);
-    console.log('[GIF Conversion] Input file written successfully');
 
-    console.log('[GIF Conversion] Converting to GIF...');
     if (onProgress) {
       onProgress('Converting to GIF... This may take a minute.');
     }
@@ -171,7 +158,6 @@ export const convertVideoToGif = async (
         '-y',
         'output.gif',
       ]);
-      console.log('[GIF Conversion] FFmpeg exec completed');
     } finally {
       // Clean up progress monitoring
       if (progressCheckInterval) {
@@ -180,13 +166,11 @@ export const convertVideoToGif = async (
       ffmpeg.off('log', progressHandler);
     }
 
-    console.log('[GIF Conversion] Reading output...');
     const gifData = await ffmpeg.readFile('output.gif');
     const gifDataSize =
       gifData instanceof Uint8Array
         ? gifData.length
         : (gifData as any).byteLength || 0;
-    console.log('[GIF Conversion] GIF data read, size:', gifDataSize);
 
     if (gifDataSize === 0) {
       throw new Error('Generated GIF file is empty');
@@ -218,7 +202,6 @@ export const convertVideoToGif = async (
       conversionTimeout = null;
     }
 
-    console.log('[GIF Conversion] Complete!', gifUrl);
     showToast({
       type: 'success',
       title: 'GIF Created!',
@@ -265,7 +248,6 @@ export const convertVideoToWebM = async (
   let conversionTimeout: number | null = null;
 
   try {
-    console.log('[WebM Conversion] Starting...', videoUrl);
 
     conversionTimeout = window.setTimeout(() => {
       console.error('[WebM Conversion] Timeout after 3 minutes');
@@ -277,14 +259,12 @@ export const convertVideoToWebM = async (
       throw new Error('Conversion timeout');
     }, 3 * 60 * 1000);
 
-    console.log('[WebM Conversion] Loading FFmpeg...');
     const ffmpeg = await loadFFmpeg();
 
     let progressMessages: string[] = [];
     let lastProgressTime = Date.now();
 
     const progressHandler = ({ message }: { message: string }) => {
-      console.log('[FFmpeg Progress]', message);
       progressMessages.push(message);
       lastProgressTime = Date.now();
 
@@ -299,22 +279,18 @@ export const convertVideoToWebM = async (
     };
     ffmpeg.on('log', progressHandler);
 
-    console.log('[WebM Conversion] Fetching video file...');
     const videoData = await fetchFile(videoUrl);
     const videoDataSize =
       videoData instanceof Uint8Array
         ? videoData.length
         : (videoData as any).byteLength || 0;
-    console.log('[WebM Conversion] Video data fetched, size:', videoDataSize);
 
     if (videoDataSize === 0) {
       throw new Error('Video file is empty');
     }
 
-    console.log('[WebM Conversion] Writing input file...');
     await ffmpeg.writeFile('input.mp4', videoData);
 
-    console.log('[WebM Conversion] Converting to WebM...');
     if (onProgress) {
       onProgress('Converting to WebM... This may take a minute.');
     }
@@ -352,7 +328,6 @@ export const convertVideoToWebM = async (
         '-y',
         'output.webm',
       ]);
-      console.log('[WebM Conversion] FFmpeg exec completed');
     } finally {
       if (progressCheckInterval) {
         clearInterval(progressCheckInterval);
@@ -360,13 +335,11 @@ export const convertVideoToWebM = async (
       ffmpeg.off('log', progressHandler);
     }
 
-    console.log('[WebM Conversion] Reading output...');
     const webmData = await ffmpeg.readFile('output.webm');
     const webmDataSize =
       webmData instanceof Uint8Array
         ? webmData.length
         : (webmData as any).byteLength || 0;
-    console.log('[WebM Conversion] WebM data read, size:', webmDataSize);
 
     if (webmDataSize === 0) {
       throw new Error('Generated WebM file is empty');
@@ -395,7 +368,6 @@ export const convertVideoToWebM = async (
       conversionTimeout = null;
     }
 
-    console.log('[WebM Conversion] Complete!', webmUrl);
     showToast({
       type: 'success',
       title: 'WebM Created!',
@@ -441,7 +413,6 @@ export const convertVideoToWebP = async (
   let conversionTimeout: number | null = null;
 
   try {
-    console.log('[WebP Conversion] Starting...', videoUrl);
 
     conversionTimeout = window.setTimeout(() => {
       console.error('[WebP Conversion] Timeout after 3 minutes');
@@ -453,14 +424,12 @@ export const convertVideoToWebP = async (
       throw new Error('Conversion timeout');
     }, 3 * 60 * 1000);
 
-    console.log('[WebP Conversion] Loading FFmpeg...');
     const ffmpeg = await loadFFmpeg();
 
     let progressMessages: string[] = [];
     let lastProgressTime = Date.now();
 
     const progressHandler = ({ message }: { message: string }) => {
-      console.log('[FFmpeg Progress]', message);
       progressMessages.push(message);
       lastProgressTime = Date.now();
 
@@ -475,22 +444,18 @@ export const convertVideoToWebP = async (
     };
     ffmpeg.on('log', progressHandler);
 
-    console.log('[WebP Conversion] Fetching video file...');
     const videoData = await fetchFile(videoUrl);
     const videoDataSize =
       videoData instanceof Uint8Array
         ? videoData.length
         : (videoData as any).byteLength || 0;
-    console.log('[WebP Conversion] Video data fetched, size:', videoDataSize);
 
     if (videoDataSize === 0) {
       throw new Error('Video file is empty');
     }
 
-    console.log('[WebP Conversion] Writing input file...');
     await ffmpeg.writeFile('input.mp4', videoData);
 
-    console.log('[WebP Conversion] Converting to WebP...');
     if (onProgress) {
       onProgress('Converting to WebP... This may take a minute.');
     }
@@ -528,7 +493,6 @@ export const convertVideoToWebP = async (
         '-y',
         'output.webp',
       ]);
-      console.log('[WebP Conversion] FFmpeg exec completed');
     } finally {
       if (progressCheckInterval) {
         clearInterval(progressCheckInterval);
@@ -536,13 +500,11 @@ export const convertVideoToWebP = async (
       ffmpeg.off('log', progressHandler);
     }
 
-    console.log('[WebP Conversion] Reading output...');
     const webpData = await ffmpeg.readFile('output.webp');
     const webpDataSize =
       webpData instanceof Uint8Array
         ? webpData.length
         : (webpData as any).byteLength || 0;
-    console.log('[WebP Conversion] WebP data read, size:', webpDataSize);
 
     if (webpDataSize === 0) {
       throw new Error('Generated WebP file is empty');
@@ -571,7 +533,6 @@ export const convertVideoToWebP = async (
       conversionTimeout = null;
     }
 
-    console.log('[WebP Conversion] Complete!', webpUrl);
     showToast({
       type: 'success',
       title: 'WebP Created!',
