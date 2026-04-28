@@ -1,11 +1,9 @@
-  const closeMotionMoreMenuStudio = () => motionMoreMenuStudio?.classList.add('hidden');
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { GoogleGenAI, GenerateContentResponse, Modality, Chat, Type } from '@google/genai';
-import {marked} from 'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js';
+import { GoogleGenAI, Modality, Type } from '@google/genai';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
 import './src/lib/authBridge';
@@ -105,6 +103,8 @@ let motionLastFrameImage2d: { file: File; dataUrl: string; } | null = null;
   
   // Explore page state
 let exploreMedia: any[] = [];
+
+const CHECKERBOARD_BG = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
 
 const getExploreMediaCategory = (item: any): 'video' | 'image' | '2dVideo' | 'other' => {
   if (!item || !item.type) return 'other';
@@ -761,13 +761,6 @@ const reorderExploreMediaByCategory = (items: any[]): any[] => {
     'draw-off': { duration: '1s', timing: 'forwards', keyframes: `@keyframes drawOff { from { mask: linear-gradient(to left, #000 0%, #000 0%, transparent 0%, transparent 100%); } to { mask: linear-gradient(to left, #000 0%, #000 100%, transparent 100%, transparent 100%); } }` },
     'replace': { duration: '1s', timing: 'forwards', keyframes: `@keyframes replace { from { clip-path: circle(0% at 50% 50%); } to { clip-path: circle(75% at 50% 50%); } }` },
   };
-  const PREVIEW_ANIMATION_CLASSES = [
-    'animate-preview-jump',
-    'animate-preview-spin',
-    'animate-preview-pulse',
-    'animate-preview-shake',
-    'animate-preview-bounce'
-  ];
   const VIDEO_LOADER_MESSAGES = [
     "Warming up the pixels...",
     "Choreographing the digital dance...",
@@ -956,7 +949,6 @@ const imagePromptDisplay = $('#image-prompt-display') as HTMLTextAreaElement;
     }
   }
 
-  const retryGenerateBtn = $('#retry-generate-btn');
   const historyPanel = $('#page-id-3d .history-panel');
   const historyList = $('#history-list');
   const historyBackBtn = $('#history-back-btn') as HTMLButtonElement;
@@ -967,8 +959,6 @@ const imagePromptDisplay = $('#image-prompt-display') as HTMLTextAreaElement;
   const detailsCloseBtn = $('#details-close-btn');
   const detailsPreviewImage = $('#details-preview-image') as HTMLImageElement;
   const detailsDownloadBtn = $('#details-download-btn') as HTMLAnchorElement;
-  const detailsCopyBtn = $('#details-copy-btn');
-  const detailsDeleteBtn = $('#details-delete-btn');
   const detailsUpscaleBtn = $('#details-upscale-btn');
   const detailsFixBtn = $('#details-fix-btn');
   const detailsMultiviewBtn = $('#details-multiview-btn');
@@ -1316,8 +1306,6 @@ const p2dMotionReferenceInput = $('#p2d-motion-reference-image-input') as HTMLIn
 const p2dMotionReferenceContainer = $('#p2d-motion-reference-image-container');
 
   // Motion Tab (Details Panel)
-const motionTabBtn = $('#image-details-panel .tab-item[data-tab="motion"]');
-const motionTabContent = $('#image-details-panel .details-tab-content[data-tab-content="motion"]');
   const motionPreviewIcon = $('#motion-preview-icon');
   const motionThumbnailImage = $('#motion-thumbnail-image') as HTMLImageElement;
   const motionThumbnailLabel = $('#motion-thumbnail-label');
@@ -1325,7 +1313,6 @@ const motionTabContent = $('#image-details-panel .details-tab-content[data-tab-c
   const motionRepeatSelect = $('#motion-repeat-select') as HTMLSelectElement;
   const motionVideoContainer = $('#motion-video-container');
   const motionVideoPlayer = $('#motion-video-player') as HTMLVideoElement;
-  const motionVideoLoader = $('#motion-video-loader');
   const generateMotionPromptBtn = $('#generate-motion-prompt-btn');
   const regenerateMotionPromptBtn = $('#regenerate-motion-prompt-btn');
   const generateVideoBtn = $('#generate-video-btn');
@@ -1339,7 +1326,6 @@ const motionTabContent = $('#image-details-panel .details-tab-content[data-tab-c
   const motionMoreRegeneratePrompt = $('#motion-more-regenerate-prompt');
   const motionMoreRegenerateVideo = $('#motion-more-regenerate-video');
   const motionPromptOutput = $('#motion-prompt-output');
-  const motionGenStatusText = $('#motion-gen-status-text');
   const motionPlayBtn = $('#motion-play-btn');
   const generateMotionFromPreviewBtn = $('#generate-motion-from-preview-btn');
   const convertToLottieBtn = $('#convert-to-lottie-btn');
@@ -1359,13 +1345,6 @@ const PARTICLE_LOADER_HTML = `
         <div class="particle"></div>
         <div class="particle"></div>
         <div class="particle"></div>
-    </div>
-`;
-
-const getLoaderMarkup = (message: string) => `
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-4); padding: var(--spacing-6);">
-        ${PARTICLE_LOADER_HTML}
-        <p style="color: var(--text-secondary);">${message}</p>
     </div>
 `;
 
@@ -1458,13 +1437,6 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
     return null;
 };
   
-  // Image Modal
-  const imageModal = $('#image-modal');
-  const imageModalView = $('#image-modal-view') as HTMLImageElement;
-  const imageModalCloseBtn = $('#image-modal-close-btn');
-  const imageModalRegenerateBtn = $('#image-modal-regenerate-btn');
-  const imageModalDownloadBtn = $('#image-modal-download-btn') as HTMLAnchorElement;
-
   // Motion Category Modal
   const motionCategoryModal = $('#motion-category-modal');
   const motionCategoryList = $('#motion-category-list');
@@ -1514,11 +1486,9 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
   const p2dCompareModal = $('#p2d-compare-modal');
   
   // Explore Page
-  const explorePage = $('#page-usages');
   const exploreMain = $('.explore-main');
-  
+
   // Main Page Elements (3D Studio functionality)
-  const mainReferenceContainer = $('#main-reference-container');
   const mainReferenceDropZone = $('#main-reference-drop-zone');
   const mainGenerateWithTextBtn = $('#main-generate-with-text-btn');
   const mainAttachImageBtn = $('#main-attach-image-btn');
@@ -1534,24 +1504,11 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
   const exploreDetailsNoPrompt = $('#explore-details-no-prompt');
   const exploreDetailsDownloadBtn = $('#explore-details-download-btn') as HTMLAnchorElement;
   const exploreUploadInput = $('#explore-upload-input') as HTMLInputElement;
-  const exploreSearchInput = $('#explore-search-input') as HTMLInputElement;
   const exploreUploadBtn = $('#explore-upload-btn');
-  const exploreContentModalOverlay = $('#explore-content-modal-overlay');
-  const exploreContentModalTitle = $('#explore-content-modal-title');
-  const exploreContentModalViewContainer = $('#explore-content-modal-view-container');
-  const exploreContentModalCloseBtn = $('#explore-content-modal-close-btn');
-  const exploreContentModalDeleteBtn = $('#explore-content-modal-delete-btn');
-  const exploreContentModalDownloadBtn = $('#explore-content-modal-download-btn') as HTMLAnchorElement;
   const uploadChoiceModal = $('#upload-choice-modal');
   const uploadChoiceCloseBtn = $('#upload-choice-close-btn');
   const uploadFromDeviceBtn = $('#upload-from-device-btn');
   
-  // Rename Modal
-  const renameModalOverlay = $('#rename-modal-overlay');
-  const renameModalForm = $('#rename-modal-form') as HTMLFormElement;
-  const renameModalInput = $('#rename-modal-input') as HTMLInputElement;
-  const renameModalCancel = $('#rename-modal-cancel');
-
   // Icon Studio Details Panel Elements
   const downloadSvgBtn = $('#download-svg-btn') as HTMLButtonElement;
   const downloadPngBtn = $('#download-png-btn') as HTMLButtonElement;
@@ -2052,45 +2009,14 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
     }
   };
 
-  // Show completion state in loading modal
-  const showLoaderCompletion = (modalElement: HTMLElement | null, textElement: HTMLElement | null) => {
-    if (!modalElement) return;
-
-    // Find loader and text elements
-    const loaderContainer = modalElement.querySelector('.loader')?.parentElement;
-    const loader = modalElement.querySelector('.loader');
-    const textElementToUpdate = textElement || modalElement.querySelector('p[id*="loader"], h3');
-
-    if (loader && loaderContainer) {
-      // Remove existing completion icon if any (to prevent duplicates)
-      const existingCompletionIcons = loaderContainer.querySelectorAll('div[style*="border-radius: 50%"]');
-      existingCompletionIcons.forEach(icon => icon.remove());
-      
-      // Hide loader
-      loader.classList.add('hidden');
-      
-      // Show completion icon
-      const completionIcon = document.createElement('div');
-      completionIcon.style.cssText = `
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background-color: var(--accent-color, #2962FF);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-      `;
-      completionIcon.innerHTML = '<span class="material-symbols-outlined" style="font-size: 20px; color: white;">check</span>';
-      loaderContainer.insertBefore(completionIcon, loader);
-
-      // Update text to "Complete"
-      if (textElementToUpdate) {
-        textElementToUpdate.textContent = 'Complete';
-        textElementToUpdate.style.color = 'var(--accent-color, #2962FF)';
-        textElementToUpdate.style.fontWeight = '600';
-      }
-    }
+  const parseApiError = (error: any): string => {
+    const msg: string = error?.message || '';
+    if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) return 'Network error. Please check your connection.';
+    if (msg.includes('quota') || msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')) return 'API quota exceeded. Please try again later.';
+    if (msg.includes('API_KEY') || msg.includes('401') || msg.includes('403')) return 'Invalid API key. Please check your settings.';
+    if (msg.includes('SAFETY') || msg.includes('safety')) return 'Content blocked by safety filter. Try a different prompt.';
+    if (msg) return msg;
+    return 'Generation failed. Please try again.';
   };
 
   const updateButtonLoadingState = (button: HTMLElement | null, isLoading: boolean) => {
@@ -2884,12 +2810,15 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
                 p2dLoaderModal.classList.add('hidden');
             }
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error generating 2D image:', error);
-        showToast({ type: 'error', title: 'Generation Failed', body: 'Failed to generate icon. Please try again.' });
-        if (p2dLoaderModal) {
-            p2dLoaderModal.classList.add('hidden');
-        }
+        const errBody = parseApiError(error);
+        showToast({ type: 'error', title: 'Generation Failed', body: errBody });
+        if (p2dLoaderModal) p2dLoaderModal.classList.add('hidden');
+        resultIdlePlaceholder2d?.classList.add('hidden');
+        resultPlaceholder2d?.classList.remove('hidden');
+        resultPlaceholder2d?.querySelector('.result-loading')?.classList.add('hidden');
+        resultError2d?.classList.remove('hidden');
     } finally {
         isGenerating = false;
     }
@@ -3130,7 +3059,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
             if (!container) return;
             if (enabled) {
                 container.style.backgroundColor = '';
-                container.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+                container.style.backgroundImage = CHECKERBOARD_BG;
                 container.style.backgroundPosition = '0 0, 8px 8px';
                 container.style.backgroundSize = '16px 16px';
             } else {
@@ -3336,7 +3265,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
         
         // Apply checkerboard background if transparent
         if (isTransparent) {
-            thumbnailContainer.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+            thumbnailContainer.style.backgroundImage = CHECKERBOARD_BG;
             thumbnailContainer.style.backgroundPosition = '0 0, 8px 8px';
             thumbnailContainer.style.backgroundSize = '16px 16px';
         } else {
@@ -3477,7 +3406,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
                 if (currentContainer) {
                     if (isCurrentTransparent) {
                         currentContainer.style.backgroundColor = '';
-                        currentContainer.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+                        currentContainer.style.backgroundImage = CHECKERBOARD_BG;
                         currentContainer.style.backgroundPosition = '0 0, 8px 8px';
                         currentContainer.style.backgroundSize = '16px 16px';
                     } else {
@@ -3489,7 +3418,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
                 if (originalContainer) {
                     if (isOriginalTransparent) {
                         originalContainer.style.backgroundColor = '';
-                        originalContainer.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+                        originalContainer.style.backgroundImage = CHECKERBOARD_BG;
                         originalContainer.style.backgroundPosition = '0 0, 8px 8px';
                         originalContainer.style.backgroundSize = '16px 16px';
                     } else {
@@ -3576,7 +3505,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
                         if (!container) return;
                         if (enabled) {
                             container.style.backgroundColor = '';
-                            container.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+                            container.style.backgroundImage = CHECKERBOARD_BG;
                             container.style.backgroundPosition = '0 0, 8px 8px';
                             container.style.backgroundSize = '16px 16px';
                         } else {
@@ -3727,7 +3656,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
         
         // Apply checkerboard background if transparent
         if (isTransparent) {
-            thumbnailContainer.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+            thumbnailContainer.style.backgroundImage = CHECKERBOARD_BG;
             thumbnailContainer.style.backgroundPosition = '0 0, 8px 8px';
             thumbnailContainer.style.backgroundSize = '16px 16px';
         } else {
@@ -3863,7 +3792,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
                 if (currentContainer) {
                     if (isCurrentTransparent) {
                         currentContainer.style.backgroundColor = '';
-                        currentContainer.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+                        currentContainer.style.backgroundImage = CHECKERBOARD_BG;
                         currentContainer.style.backgroundPosition = '0 0, 8px 8px';
                         currentContainer.style.backgroundSize = '16px 16px';
                     } else {
@@ -3875,7 +3804,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
                 if (originalContainer) {
                     if (isOriginalTransparent) {
                         originalContainer.style.backgroundColor = '';
-                        originalContainer.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+                        originalContainer.style.backgroundImage = CHECKERBOARD_BG;
                         originalContainer.style.backgroundPosition = '0 0, 8px 8px';
                         originalContainer.style.backgroundSize = '16px 16px';
                     } else {
@@ -3961,7 +3890,7 @@ const extractVideoDownloadUrl = (operation: any): string | null => {
                         if (!container) return;
                         if (enabled) {
                             container.style.backgroundColor = '';
-                            container.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+                            container.style.backgroundImage = CHECKERBOARD_BG;
                             container.style.backgroundPosition = '0 0, 8px 8px';
                             container.style.backgroundSize = '16px 16px';
                         } else {
@@ -4568,7 +4497,7 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
         }
     } catch (error) {
         console.error('Error generating 3D image:', error);
-        showToast({ type: 'error', title: 'Generation Failed', body: 'Failed to generate image. Please try again.' });
+        showToast({ type: 'error', title: 'Generation Failed', body: parseApiError(error) });
         if (imageGenerationLoaderModal) {
             imageGenerationLoaderModal.classList.add('hidden');
         }
@@ -4616,7 +4545,7 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
       }
     } catch (error) {
       console.error('Error generating subject image:', error);
-      showToast({ type: 'error', title: 'Generation Failed', body: 'Failed to generate subject image.' });
+      showToast({ type: 'error', title: 'Generation Failed', body: parseApiError(error) });
     } finally {
       loaderModal?.classList.add('hidden');
       isGenerating = false;
@@ -4664,7 +4593,7 @@ const setInitialMotionFrames2d = async (imageData: GeneratedImageData) => {
       }
     } catch (error) {
       console.error('Error generating scene image:', error);
-      showToast({ type: 'error', title: 'Generation Failed', body: 'Failed to generate scene image.' });
+      showToast({ type: 'error', title: 'Generation Failed', body: parseApiError(error) });
     } finally {
       loaderModal?.classList.add('hidden');
     }
@@ -5468,20 +5397,7 @@ Make sure the result is photorealistic and aesthetically pleasing.`;
       }
     } catch (error) {
       console.error("Image generation failed:", error);
-      console.error("Error details:", {
-        name: error?.name,
-        message: error?.message,
-        stack: error?.stack
-      });
-      
-      let errorMessage = 'Could not generate image.';
-      if (error?.message?.includes('Failed to fetch')) {
-        errorMessage = 'Network error. Please check your connection and API key.';
-      } else if (error?.message) {
-        errorMessage = error.message;
-      }
-      
-      showToast({ type: 'error', title: 'Generation Failed', body: errorMessage });
+      showToast({ type: 'error', title: 'Generation Failed', body: parseApiError(error) });
       resultError?.classList.remove('hidden');
     } finally {
       isGenerating = false;
@@ -5750,6 +5666,7 @@ Make sure the result is photorealistic and aesthetically pleasing.`;
         logGeneration('video', 'veo-2', '').catch(() => {});
         uploadBlobGeneration(videoBlob, videoBlob.type || 'video/mp4', `video_studio_${Date.now()}.mp4`).catch(() => {});
 
+        if (currentGeneratedImageStudio.videoDataUrl) URL.revokeObjectURL(currentGeneratedImageStudio.videoDataUrl);
         currentGeneratedImageStudio.videoDataUrl = videoDataUrl;
         const historyItem = imageStudioHistory.find(item => item.id === currentGeneratedImageStudio!.id);
         if (historyItem) {
@@ -6328,7 +6245,8 @@ Make sure the result is photorealistic and aesthetically pleasing.`;
     
     try {
       const gifUrl = await convertVideoToGif(currentGeneratedImage2d.videoDataUrl);
-      
+
+      if (currentGeneratedImage2d.gifDataUrl) URL.revokeObjectURL(currentGeneratedImage2d.gifDataUrl);
       currentGeneratedImage2d.gifDataUrl = gifUrl;
       const historyItem = imageHistory2d.find(item => item.id === currentGeneratedImage2d!.id);
       if (historyItem) {
@@ -6376,6 +6294,7 @@ Make sure the result is photorealistic and aesthetically pleasing.`;
         }
       );
       
+      if (currentGeneratedImage2d.webmDataUrl) URL.revokeObjectURL(currentGeneratedImage2d.webmDataUrl);
       currentGeneratedImage2d.webmDataUrl = webmUrl;
       const historyItem = imageHistory2d.find(item => item.id === currentGeneratedImage2d!.id);
       if (historyItem) {
@@ -6418,6 +6337,7 @@ Make sure the result is photorealistic and aesthetically pleasing.`;
         }
       );
       
+      if (currentGeneratedImage2d.webpDataUrl) URL.revokeObjectURL(currentGeneratedImage2d.webpDataUrl);
       currentGeneratedImage2d.webpDataUrl = webpUrl;
       const historyItem = imageHistory2d.find(item => item.id === currentGeneratedImage2d!.id);
       if (historyItem) {
@@ -7316,7 +7236,7 @@ Return as a JSON array of 5 objects.`;
             if (!container) return;
             if (enabled) {
                 container.style.backgroundColor = '';
-                container.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+                container.style.backgroundImage = CHECKERBOARD_BG;
                 container.style.backgroundPosition = '0 0, 8px 8px';
                 container.style.backgroundSize = '16px 16px';
             } else {
@@ -8218,12 +8138,14 @@ Return as a JSON array of 5 objects.`;
             mediaEl = document.createElement('img');
             mediaEl.src = item.dataUrl;
             mediaEl.alt = item.name;
+            mediaEl.style.cssText = 'max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;';
         } else if (item.type.startsWith('video/')) {
             mediaEl = document.createElement('video');
             mediaEl.src = item.dataUrl;
             mediaEl.controls = true;
             mediaEl.autoplay = true;
             mediaEl.loop = true;
+            mediaEl.style.cssText = 'max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;';
         }
         if (mediaEl) {
             exploreDetailsPreviewContainer.appendChild(mediaEl);
@@ -10082,30 +10004,21 @@ regenerate3DBtn?.addEventListener('click', () => {
   const filtersPanelBackdrop = $('#filters-panel-backdrop');
   const settingsPanelBackdrop = $('#settings-panel-backdrop');
   
-  const openFiltersPanel = () => {
-    filtersPanel?.classList.add('is-open');
-    filtersPanelBackdrop?.classList.add('active');
+  const openPanel = (panel: HTMLElement | null, backdrop: HTMLElement | null) => {
+    panel?.classList.add('is-open');
+    backdrop?.classList.add('active');
     document.body.classList.add('no-scroll');
   };
-  
-  const closeFiltersPanel = () => {
-    filtersPanel?.classList.remove('is-open');
-    filtersPanelBackdrop?.classList.remove('active');
-    document.body.classList.remove('no-scroll');
-    iconsPage?.classList.add('filters-collapsed');
-  };
-  
-  const openSettingsPanel = () => {
-    settingsPanel?.classList.add('is-open');
-    settingsPanelBackdrop?.classList.add('active');
-    document.body.classList.add('no-scroll');
-  };
-  
-  const closeSettingsPanel = () => {
-    settingsPanel?.classList.remove('is-open');
-    settingsPanelBackdrop?.classList.remove('active');
+  const closePanel = (panel: HTMLElement | null, backdrop: HTMLElement | null) => {
+    panel?.classList.remove('is-open');
+    backdrop?.classList.remove('active');
     document.body.classList.remove('no-scroll');
   };
+
+  const openFiltersPanel = () => openPanel(filtersPanel, filtersPanelBackdrop);
+  const closeFiltersPanel = () => { closePanel(filtersPanel, filtersPanelBackdrop); iconsPage?.classList.add('filters-collapsed'); };
+  const openSettingsPanel = () => openPanel(settingsPanel, settingsPanelBackdrop);
+  const closeSettingsPanel = () => closePanel(settingsPanel, settingsPanelBackdrop);
   
   settingsCloseBtn?.addEventListener('click', () => closeSettingsPanel());
   toggleFiltersBtn?.addEventListener('click', () => {
@@ -10141,6 +10054,7 @@ regenerate3DBtn?.addEventListener('click', () => {
 
 
   imageGenerateBtn2d?.addEventListener('click', handleGenerateImage2d);
+  retryGenerateBtn2d?.addEventListener('click', handleGenerateImage2d);
   imagePromptSubjectInput2d?.addEventListener('input', update2dPromptDisplay);
   $$('#page-id-2d input[type="radio"], #page-id-2d input[type="checkbox"], #page-id-2d input[type="range"], #page-id-2d input[type="color"]').forEach(el => {
       el.addEventListener('input', () => {
@@ -10152,6 +10066,7 @@ regenerate3DBtn?.addEventListener('click', () => {
   });
 
   imageGenerateBtn?.addEventListener('click', handleGenerateImage3d);
+  $('#retry-generate-btn')?.addEventListener('click', handleGenerateImage3d);
 
   const sync3dTemplate = () => {
     build3dPromptTemplate();
@@ -10450,6 +10365,7 @@ regenerate3DBtn?.addEventListener('click', () => {
   
   // Image Studio Generate button
   $('#image-generate-btn-image')?.addEventListener('click', handleGenerateImageStudio);
+  $('#retry-generate-btn-image')?.addEventListener('click', handleGenerateImageStudio);
   
   // Image Studio Text Modal
   $('#image-studio-text-modal-close-btn')?.addEventListener('click', () => {
@@ -10488,12 +10404,39 @@ regenerate3DBtn?.addEventListener('click', () => {
   exploreDetailsCloseBtn?.addEventListener('click', () => {
     exploreDetailsModal?.classList.add('hidden');
   });
+
+  $('#explore-details-copy-prompt-btn')?.addEventListener('click', async () => {
+    const text = exploreDetailsPromptCode?.textContent?.trim() || '';
+    if (!text) return;
+    await navigator.clipboard.writeText(text);
+    showToast({ type: 'success', title: 'Copied', body: 'Prompt copied to clipboard.' });
+  });
   
   // Close modal when clicking outside
   exploreDetailsModal?.addEventListener('click', (e) => {
     if (e.target === exploreDetailsModal) {
       exploreDetailsModal.classList.add('hidden');
     }
+  });
+
+  const renameModalOverlay = $('#rename-modal-overlay');
+  const renameModalForm = $('#rename-modal-form') as HTMLFormElement | null;
+  const renameModalInput = $('#rename-modal-input') as HTMLInputElement | null;
+  const closeRenameModal = () => renameModalOverlay?.classList.add('hidden');
+
+  $('#rename-modal-cancel')?.addEventListener('click', closeRenameModal);
+  renameModalOverlay?.addEventListener('click', (e) => {
+    if (e.target === renameModalOverlay) closeRenameModal();
+  });
+  renameModalForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newName = renameModalInput?.value.trim();
+    if (!newName || !fileToRenameId) { closeRenameModal(); return; }
+    const item = exploreMedia.find(m => m.id === fileToRenameId);
+    if (item) item.name = newName;
+    fileToRenameId = null;
+    closeRenameModal();
+    renderExploreFeed();
   });
 
 
@@ -10858,7 +10801,7 @@ The result must be: IDENTICAL shape + PURE VIBRANT ${iconColor} color at MAXIMUM
             ];
             
             const aiResponse = await ai.models.generateContent({
-                model: 'gemini-3-pro-image-preview', 
+                model: 'gemini-3-pro-image-preview',
                 contents: { parts },
                 config: {
                     responseModalities: [Modality.IMAGE],
@@ -10996,7 +10939,7 @@ The result must be: IDENTICAL shape + PURE VIBRANT ${iconColor} color at MAXIMUM
                     if (!container) return;
                     if (enabled) {
                         container.style.backgroundColor = '';
-                        container.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+                        container.style.backgroundImage = CHECKERBOARD_BG;
                         container.style.backgroundPosition = '0 0, 8px 8px';
                         container.style.backgroundSize = '16px 16px';
                     } else {
@@ -11153,7 +11096,7 @@ The result must be: IDENTICAL shape + PURE VIBRANT ${iconColor} color at MAXIMUM
                 if (svgPreviewContainer) {
                     if (svgBgToggle?.checked) {
                         svgPreviewContainer.style.backgroundColor = '';
-                        svgPreviewContainer.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+                        svgPreviewContainer.style.backgroundImage = CHECKERBOARD_BG;
                     } else {
                         svgPreviewContainer.style.backgroundColor = 'white';
                         svgPreviewContainer.style.backgroundImage = 'none';
@@ -11207,6 +11150,7 @@ The result must be: IDENTICAL shape + PURE VIBRANT ${iconColor} color at MAXIMUM
             }
             if (p2dDownloadSvgBtn) {
                 const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                if (p2dDownloadSvgBtn.href.startsWith('blob:')) URL.revokeObjectURL(p2dDownloadSvgBtn.href);
                 const svgUrl = URL.createObjectURL(svgBlob);
                 p2dDownloadSvgBtn.href = svgUrl;
                 p2dDownloadSvgBtn.download = `${currentGeneratedImage2d.subject.replace(/\s+/g, '_')}.svg`;
@@ -11373,13 +11317,14 @@ The result must be: IDENTICAL shape + PURE VIBRANT ${iconColor} color at MAXIMUM
     const moreMenu2d = $('#p2d-more-menu');
     const moreCopy2d = $('#p2d-more-copy');
     const moreDelete2d = $('#p2d-more-delete');
-    const closeMoreMenu = () => moreMenu2d?.classList.add('hidden');
-    moreMenuBtn2d?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        moreMenu2d?.classList.toggle('hidden');
-    });
-    document.addEventListener('click', () => closeMoreMenu());
-    moreMenu2d?.addEventListener('click', (e) => e.stopPropagation());
+    const setupDropdown = (btn: HTMLElement | null, menu: HTMLElement | null) => {
+      const close = () => menu?.classList.add('hidden');
+      btn?.addEventListener('click', (e) => { e.stopPropagation(); menu?.classList.toggle('hidden'); });
+      document.addEventListener('click', close);
+      menu?.addEventListener('click', (e) => e.stopPropagation());
+      return close;
+    };
+    const closeMoreMenu = setupDropdown(moreMenuBtn2d, moreMenu2d);
     moreCopy2d?.addEventListener('click', () => {
         closeMoreMenu();
         // Reuse existing copy handler
@@ -11428,13 +11373,7 @@ The result must be: IDENTICAL shape + PURE VIBRANT ${iconColor} color at MAXIMUM
     });
     
   // 3D Details: More menu handlers
-  const close3dMoreMenu = () => detailsMoreMenu?.classList.add('hidden');
-  detailsMoreMenuBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    detailsMoreMenu?.classList.toggle('hidden');
-  });
-  document.addEventListener('click', () => close3dMoreMenu());
-  detailsMoreMenu?.addEventListener('click', (e) => e.stopPropagation());
+  const close3dMoreMenu = setupDropdown(detailsMoreMenuBtn, detailsMoreMenu);
   detailsMoreUpscale?.addEventListener('click', () => {
     close3dMoreMenu();
     // Reuse existing Upscale action
@@ -11442,13 +11381,7 @@ The result must be: IDENTICAL shape + PURE VIBRANT ${iconColor} color at MAXIMUM
   });
   
   // Motion More Menu handlers
-  const closeMotionMoreMenu = () => motionMoreMenu?.classList.add('hidden');
-  motionMoreMenuBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    motionMoreMenu?.classList.toggle('hidden');
-  });
-  document.addEventListener('click', () => closeMotionMoreMenu());
-  motionMoreMenu?.addEventListener('click', (e) => e.stopPropagation());
+  const closeMotionMoreMenu = setupDropdown(motionMoreMenuBtn, motionMoreMenu);
   motionMoreRegeneratePrompt?.addEventListener('click', () => {
     closeMotionMoreMenu();
     regenerateMotionPromptBtn?.dispatchEvent(new Event('click'));
@@ -11458,13 +11391,7 @@ The result must be: IDENTICAL shape + PURE VIBRANT ${iconColor} color at MAXIMUM
     regenerateVideoBtn?.dispatchEvent(new Event('click'));
   });
 
-  const closeMotionMoreMenuImagePanel = () => motionMoreMenuImage?.classList.add('hidden');
-  motionMoreMenuBtnImage?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    motionMoreMenuImage?.classList.toggle('hidden');
-  });
-  document.addEventListener('click', () => closeMotionMoreMenuImagePanel());
-  motionMoreMenuImage?.addEventListener('click', (e) => e.stopPropagation());
+  const closeMotionMoreMenuImagePanel = setupDropdown(motionMoreMenuBtnImage, motionMoreMenuImage);
   motionMoreRegeneratePromptImage?.addEventListener('click', () => {
     closeMotionMoreMenuImagePanel();
     regenerateMotionPromptBtnStudio?.dispatchEvent(new Event('click'));
@@ -11610,7 +11537,7 @@ detailsMoreCopy?.addEventListener('click', async () => {
                     if (!container) return;
                     if (enabled) {
                         container.style.backgroundColor = '';
-                        container.style.backgroundImage = 'repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0)';
+                        container.style.backgroundImage = CHECKERBOARD_BG;
                         container.style.backgroundPosition = '0 0, 8px 8px';
                         container.style.backgroundSize = '16px 16px';
                     } else {
@@ -11929,36 +11856,6 @@ Apply the main color (${objectColor}) thoughtfully as the primary/accent color o
 
     // Cache: imageId → rendered grid HTML
     const multiviewCache = new Map<string, string>();
-
-    const renderMultiviewCards = (results: ({ data: string; mimeType: string } | null)[], subject: string) => {
-        if (!multiviewGrid) return;
-        multiviewGrid.innerHTML = '';
-        results.forEach((result, i) => {
-            const label = MULTIVIEW_ANGLES[i].label;
-            const card = document.createElement('div');
-            card.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
-
-            if (result) {
-                const dataUrl = `data:${result.mimeType};base64,${result.data}`;
-                const filename = `${subject.replace(/\s+/g, '_')}_${label.replace(/\s+/g, '_')}.png`;
-                card.innerHTML = `
-                    <div style="width:100%;padding-top:100%;position:relative;background:var(--surface-secondary,#f5f5f5);border-radius:12px;overflow:hidden;">
-                        <img src="${dataUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;" alt="${label}">
-                    </div>
-                    <span style="font-size:12px;font-weight:500;text-align:center;color:var(--text-secondary);">${label}</span>
-                    <a href="${dataUrl}" download="${filename}" class="secondary-btn" style="width:100%;justify-content:center;font-size:12px;padding:6px 8px;">
-                        <span class="material-symbols-outlined" style="font-size:16px;">download</span> Save
-                    </a>`;
-            } else {
-                card.innerHTML = `
-                    <div style="width:100%;padding-top:100%;position:relative;background:var(--surface-secondary,#f5f5f5);border-radius:12px;">
-                        <span class="material-symbols-outlined" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:32px;">broken_image</span>
-                    </div>
-                    <span style="font-size:12px;font-weight:500;text-align:center;color:var(--text-secondary);">${label}</span>`;
-            }
-            multiviewGrid.appendChild(card);
-        });
-    };
 
     detailsMultiviewBtn?.addEventListener('click', async () => {
         if (!currentGeneratedImage) return;
@@ -12285,13 +12182,7 @@ STRICT RULES:
     p2dConvertToGifBtn?.addEventListener('click', handleConvertToGif2d);
     p2dConvertToWebmBtn?.addEventListener('click', handleConvertToWebm2d);
     p2dConvertToWebpBtn?.addEventListener('click', handleConvertToWebp2d);
-    const closeMotionMoreMenu2d = () => p2dMotionMoreMenu?.classList.add('hidden');
-    p2dMotionMoreMenuBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        p2dMotionMoreMenu?.classList.toggle('hidden');
-    });
-    p2dMotionMoreMenu?.addEventListener('click', (e) => e.stopPropagation());
-    document.addEventListener('click', closeMotionMoreMenu2d);
+    const closeMotionMoreMenu2d = setupDropdown(p2dMotionMoreMenuBtn, p2dMotionMoreMenu);
     p2dMotionMoreRegeneratePrompt?.addEventListener('click', () => {
         closeMotionMoreMenu2d();
         p2dRegenerateMotionPromptBtn?.dispatchEvent(new Event('click'));
