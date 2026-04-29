@@ -88,7 +88,7 @@ export default function StoragePage() {
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ display: 'flex', flexDirection: 'column', maxWidth: '90vw', maxHeight: '90vh', background: 'var(--surface-color)', borderRadius: 16, overflow: 'hidden' }}
+            style={{ display: 'flex', flexDirection: 'column', width: '90vw', maxWidth: '800px', maxHeight: '90vh', background: 'var(--surface-color)', borderRadius: 16, overflow: 'hidden' }}
           >
             <div style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div style={{ minWidth: 0, marginTop: 20, marginLeft: 20 }}>
@@ -105,8 +105,8 @@ export default function StoragePage() {
             <div style={{ background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {url ? (
                 isVideo
-                  ? <video src={url} style={{ maxWidth: '90vw', maxHeight: '80vh', objectFit: 'contain', display: 'block' }} controls autoPlay loop playsInline />
-                  : <img src={url} alt={previewItem.original_name || ''} style={{ maxWidth: '90vw', maxHeight: '80vh', objectFit: 'contain', display: 'block' }} />
+                  ? <video src={url} style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain', display: 'block' }} controls autoPlay loop playsInline />
+                  : <img src={url} alt={previewItem.original_name || ''} style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain', display: 'block' }} />
               ) : (
                 <div style={{ width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 48, opacity: 0.3 }}>{isVideo ? 'videocam' : 'image'}</span>

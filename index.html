@@ -288,7 +288,7 @@
       <!-- Explore Details Modal (Center Popup) -->
       <!-- History Modal -->
       <div id="history-modal" class="image-modal-overlay hidden">
-        <div class="image-modal-content modal-content-large">
+        <div class="image-modal-content modal-content-large" style="width: 90vw; max-width: 800px;">
           <header style="display: flex; justify-content: space-between; align-items: center; padding: 0; height: 24px;">
             <h2 style="font-size: 20px; font-weight: 700; margin: 0;">History</h2>
             <button id="history-modal-close-btn" class="icon-button" aria-label="Close" style="background: none; border: none; padding: 0; width: 40px; height: 40px; border-radius: 50%; color: var(--text-primary); cursor: pointer; transition: background-color 0.2s;">
@@ -303,7 +303,7 @@
       
       <!-- History Detail Modal (768px 미만) -->
       <div id="history-detail-modal" class="image-modal-overlay hidden">
-        <div class="image-modal-content modal-content-large">
+        <div class="image-modal-content modal-content-large" style="width: 90vw; max-width: 800px;">
           <header style="display: flex; justify-content: space-between; align-items: center; padding: 0; height: 24px;">
             <div style="display: flex; align-items: center; gap: 8px;">
               <button id="history-detail-back-btn" class="icon-button" aria-label="Back" style="background: none; border: none; padding: 0; width: 40px; height: 40px; border-radius: 50%; color: var(--text-primary); cursor: pointer; transition: background-color 0.2s;">
@@ -322,7 +322,7 @@
       </div>
       
       <div id="explore-details-modal" class="image-modal-overlay hidden">
-        <div class="image-modal-content modal-content-large">
+        <div class="image-modal-content modal-content-large" style="width: 90vw; max-width: 800px;">
           <header style="display: flex; justify-content: space-between; align-items: center; padding: 0; height: 24px;">
             <h2 id="explore-details-title" style="margin: 0; font-size: 20px; font-weight: 600;">Details</h2>
             <button id="explore-details-close-btn" class="icon-button" aria-label="Close Details">
@@ -835,21 +835,10 @@
                                 </div>
                                 <div class="result-placeholder hidden">
                                     <div class="result-loading">
-                                        <div class="loader">
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                        </div>
+                                        <svg class="logo-loader" width="68" height="48" viewBox="0 0 189 132" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                          <defs><linearGradient id="ll-g-r1" x1="20" y1="110" x2="170" y2="20" gradientUnits="userSpaceOnUse"><stop stop-color="#0040D8"/><stop offset="1" stop-color="#48BBFF"/></linearGradient></defs>
+                                          <path style="stroke-dasharray:1;stroke-dashoffset:1;animation:creon-logo-draw 2.6s ease-in-out infinite" stroke="url(#ll-g-r1)" stroke-width="30" stroke-linecap="round" pathLength="1" d="M17.6664 113.096C17.0164 100.926 18.0964 88.1461 24.0464 77.2661C29.4364 67.4061 39.3064 60.5961 49.5764 56.5661C62.9464 51.3161 79.0364 48.8461 93.0164 53.6561C109.476 59.3161 119.596 76.1561 117.786 93.4061C117.046 100.496 114.096 107.896 107.666 111.566C100.386 115.726 91.0164 114.766 83.7264 111.156C82.0764 110.336 80.4964 109.376 79.0364 108.256C72.7564 103.476 68.2364 96.6561 65.1964 89.3661C58.1864 72.5361 58.7364 52.2561 70.4464 37.6861C79.8264 26.0161 94.4464 19.1961 109.196 17.7761C118.246 16.9061 127.556 18.0661 135.966 21.5861C146.916 26.1761 155.546 34.9861 161.626 45.0361C167.706 55.0861 170.956 70.7261 170.956 79.9461"/>
+                                        </svg>
                                         <span class="loader-text">Generating...</span>
                                     </div>
                                     <div class="result-error">
@@ -980,21 +969,10 @@
                                 <div class="video-result-container hidden" id="p2d-motion-video-container">
                                     <video id="p2d-motion-video-player" controls loop autoplay muted playsinline></video>
                                     <div id="p2d-motion-video-loader" class="result-loading hidden">
-                                        <div class="loader">
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                        </div>
+                                        <svg class="logo-loader" width="68" height="48" viewBox="0 0 189 132" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                          <defs><linearGradient id="ll-g-r2" x1="20" y1="110" x2="170" y2="20" gradientUnits="userSpaceOnUse"><stop stop-color="#0040D8"/><stop offset="1" stop-color="#48BBFF"/></linearGradient></defs>
+                                          <path style="stroke-dasharray:1;stroke-dashoffset:1;animation:creon-logo-draw 2.6s ease-in-out infinite" stroke="url(#ll-g-r2)" stroke-width="30" stroke-linecap="round" pathLength="1" d="M17.6664 113.096C17.0164 100.926 18.0964 88.1461 24.0464 77.2661C29.4364 67.4061 39.3064 60.5961 49.5764 56.5661C62.9464 51.3161 79.0364 48.8461 93.0164 53.6561C109.476 59.3161 119.596 76.1561 117.786 93.4061C117.046 100.496 114.096 107.896 107.666 111.566C100.386 115.726 91.0164 114.766 83.7264 111.156C82.0764 110.336 80.4964 109.376 79.0364 108.256C72.7564 103.476 68.2364 96.6561 65.1964 89.3661C58.1864 72.5361 58.7364 52.2561 70.4464 37.6861C79.8264 26.0161 94.4464 19.1961 109.196 17.7761C118.246 16.9061 127.556 18.0661 135.966 21.5861C146.916 26.1761 155.546 34.9861 161.626 45.0361C167.706 55.0861 170.956 70.7261 170.956 79.9461"/>
+                                        </svg>
                                         <span id="p2d-motion-gen-status-text" class="loader-text">Generating video...</span>
                                     </div>
                                 </div>
@@ -1262,21 +1240,10 @@
                                 </div>
                                 <div class="result-placeholder hidden">
                                     <div class="result-loading">
-                                        <div class="loader">
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                        </div>
+                                        <svg class="logo-loader" width="68" height="48" viewBox="0 0 189 132" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                          <defs><linearGradient id="ll-g-r3" x1="20" y1="110" x2="170" y2="20" gradientUnits="userSpaceOnUse"><stop stop-color="#0040D8"/><stop offset="1" stop-color="#48BBFF"/></linearGradient></defs>
+                                          <path style="stroke-dasharray:1;stroke-dashoffset:1;animation:creon-logo-draw 2.6s ease-in-out infinite" stroke="url(#ll-g-r3)" stroke-width="30" stroke-linecap="round" pathLength="1" d="M17.6664 113.096C17.0164 100.926 18.0964 88.1461 24.0464 77.2661C29.4364 67.4061 39.3064 60.5961 49.5764 56.5661C62.9464 51.3161 79.0364 48.8461 93.0164 53.6561C109.476 59.3161 119.596 76.1561 117.786 93.4061C117.046 100.496 114.096 107.896 107.666 111.566C100.386 115.726 91.0164 114.766 83.7264 111.156C82.0764 110.336 80.4964 109.376 79.0364 108.256C72.7564 103.476 68.2364 96.6561 65.1964 89.3661C58.1864 72.5361 58.7364 52.2561 70.4464 37.6861C79.8264 26.0161 94.4464 19.1961 109.196 17.7761C118.246 16.9061 127.556 18.0661 135.966 21.5861C146.916 26.1761 155.546 34.9861 161.626 45.0361C167.706 55.0861 170.956 70.7261 170.956 79.9461"/>
+                                        </svg>
                                         <span class="loader-text">Generating...</span>
                                     </div>
                                     <div class="result-error">
@@ -1406,21 +1373,10 @@
                                 <div class="video-result-container hidden" id="motion-video-container">
                                     <video id="motion-video-player" controls loop autoplay muted playsinline></video>
                                     <div id="motion-video-loader" class="result-loading hidden">
-                                        <div class="loader">
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                        </div>
+                                        <svg class="logo-loader" width="68" height="48" viewBox="0 0 189 132" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                          <defs><linearGradient id="ll-g-r4" x1="20" y1="110" x2="170" y2="20" gradientUnits="userSpaceOnUse"><stop stop-color="#0040D8"/><stop offset="1" stop-color="#48BBFF"/></linearGradient></defs>
+                                          <path style="stroke-dasharray:1;stroke-dashoffset:1;animation:creon-logo-draw 2.6s ease-in-out infinite" stroke="url(#ll-g-r4)" stroke-width="30" stroke-linecap="round" pathLength="1" d="M17.6664 113.096C17.0164 100.926 18.0964 88.1461 24.0464 77.2661C29.4364 67.4061 39.3064 60.5961 49.5764 56.5661C62.9464 51.3161 79.0364 48.8461 93.0164 53.6561C109.476 59.3161 119.596 76.1561 117.786 93.4061C117.046 100.496 114.096 107.896 107.666 111.566C100.386 115.726 91.0164 114.766 83.7264 111.156C82.0764 110.336 80.4964 109.376 79.0364 108.256C72.7564 103.476 68.2364 96.6561 65.1964 89.3661C58.1864 72.5361 58.7364 52.2561 70.4464 37.6861C79.8264 26.0161 94.4464 19.1961 109.196 17.7761C118.246 16.9061 127.556 18.0661 135.966 21.5861C146.916 26.1761 155.546 34.9861 161.626 45.0361C167.706 55.0861 170.956 70.7261 170.956 79.9461"/>
+                                        </svg>
                                         <span id="motion-gen-status-text" class="loader-text">Generating video...</span>
                                     </div>
                                 </div>
@@ -1607,21 +1563,10 @@
                                 </div>
                                 <div class="result-placeholder hidden">
                                     <div class="result-loading">
-                                        <div class="loader">
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                        </div>
+                                        <svg class="logo-loader" width="68" height="48" viewBox="0 0 189 132" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                          <defs><linearGradient id="ll-g-r5" x1="20" y1="110" x2="170" y2="20" gradientUnits="userSpaceOnUse"><stop stop-color="#0040D8"/><stop offset="1" stop-color="#48BBFF"/></linearGradient></defs>
+                                          <path style="stroke-dasharray:1;stroke-dashoffset:1;animation:creon-logo-draw 2.6s ease-in-out infinite" stroke="url(#ll-g-r5)" stroke-width="30" stroke-linecap="round" pathLength="1" d="M17.6664 113.096C17.0164 100.926 18.0964 88.1461 24.0464 77.2661C29.4364 67.4061 39.3064 60.5961 49.5764 56.5661C62.9464 51.3161 79.0364 48.8461 93.0164 53.6561C109.476 59.3161 119.596 76.1561 117.786 93.4061C117.046 100.496 114.096 107.896 107.666 111.566C100.386 115.726 91.0164 114.766 83.7264 111.156C82.0764 110.336 80.4964 109.376 79.0364 108.256C72.7564 103.476 68.2364 96.6561 65.1964 89.3661C58.1864 72.5361 58.7364 52.2561 70.4464 37.6861C79.8264 26.0161 94.4464 19.1961 109.196 17.7761C118.246 16.9061 127.556 18.0661 135.966 21.5861C146.916 26.1761 155.546 34.9861 161.626 45.0361C167.706 55.0861 170.956 70.7261 170.956 79.9461"/>
+                                        </svg>
                                         <span class="loader-text">Generating...</span>
                                     </div>
                                     <div class="result-error">
@@ -1753,21 +1698,10 @@
                                 <div class="video-result-container hidden" id="motion-video-container-image">
                                     <video id="motion-video-player-image" controls loop autoplay muted playsinline></video>
                                     <div id="motion-video-loader-image" class="result-loading hidden">
-                                        <div class="loader">
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                            <div class="particle"></div>
-                                        </div>
+                                        <svg class="logo-loader" width="68" height="48" viewBox="0 0 189 132" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                          <defs><linearGradient id="ll-g-r6" x1="20" y1="110" x2="170" y2="20" gradientUnits="userSpaceOnUse"><stop stop-color="#0040D8"/><stop offset="1" stop-color="#48BBFF"/></linearGradient></defs>
+                                          <path style="stroke-dasharray:1;stroke-dashoffset:1;animation:creon-logo-draw 2.6s ease-in-out infinite" stroke="url(#ll-g-r6)" stroke-width="30" stroke-linecap="round" pathLength="1" d="M17.6664 113.096C17.0164 100.926 18.0964 88.1461 24.0464 77.2661C29.4364 67.4061 39.3064 60.5961 49.5764 56.5661C62.9464 51.3161 79.0364 48.8461 93.0164 53.6561C109.476 59.3161 119.596 76.1561 117.786 93.4061C117.046 100.496 114.096 107.896 107.666 111.566C100.386 115.726 91.0164 114.766 83.7264 111.156C82.0764 110.336 80.4964 109.376 79.0364 108.256C72.7564 103.476 68.2364 96.6561 65.1964 89.3661C58.1864 72.5361 58.7364 52.2561 70.4464 37.6861C79.8264 26.0161 94.4464 19.1961 109.196 17.7761C118.246 16.9061 127.556 18.0661 135.966 21.5861C146.916 26.1761 155.546 34.9861 161.626 45.0361C167.706 55.0861 170.956 70.7261 170.956 79.9461"/>
+                                        </svg>
                                         <span class="loader-text">Generating video...</span>
                                     </div>
                                 </div>
